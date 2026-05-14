@@ -1,0 +1,26 @@
+@import './base.css';
+
+/* Full-width shell — the old Vue starter used a 2-column grid here, which squeezed
+   the planner into half the viewport on desktop. */
+#app {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-weight: normal;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
