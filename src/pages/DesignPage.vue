@@ -28,7 +28,7 @@
               </div>
             </div>
 
-            <div class="tracker-counter">{{ store.currentStep }}/5</div>
+            <div class="tracker-counter">{{ store.currentStep }}/6</div>
           </div>
         </div>
       </header>
@@ -48,7 +48,7 @@
         <div v-else></div>
 
         <button @click="handleNext" class="btn btn-next" :disabled="!isStepValid">
-          {{ store.currentStep === 5 ? 'Get Estimate' : 'Next Step' }}
+          {{ store.currentStep === 6 ? 'Get Estimate' : 'Next Step' }}
           <i class="bi bi-arrow-right ms-2"></i>
         </button>
       </footer>
@@ -65,6 +65,7 @@ import Ceilings from '@/components/Ceilings.vue'
 import Walls from '@/components/Walls.vue'
 import Flooring from '@/components/Flooring.vue'
 import Furnishing from '@/components/Furnishing.vue'
+import AdditionalInput from '@/components/AdditionalInput.vue'
 
 const store = usePlannerStore()
 
@@ -74,10 +75,11 @@ const steps = [
   { label: 'Walls' },
   { label: 'Flooring' },
   { label: 'Furnishing' },
+  { label: 'Additional' },
 ]
 
 const currentStepComponent = computed(() => {
-  const stepComponents = [Design, Ceilings, Walls, Flooring, Furnishing]
+  const stepComponents = [Design, Ceilings, Walls, Flooring, Furnishing, AdditionalInput]
   return stepComponents[store.currentStep - 1]
 })
 
@@ -98,6 +100,7 @@ const isStepValid = computed(() => {
       c.level !== null &&
       c.cornishSize !== null &&
       c.lightingType !== '' &&
+      c.hasChandelier !== null &&
       c.hasCurtainBox !== null
     )
   }
@@ -112,7 +115,10 @@ const isStepValid = computed(() => {
       w.mouldingLength !== null &&
       w.mouldingLength > 0 &&
       w.wallPainting !== '' &&
-      w.wallpaper !== ''
+      w.wallpaper !== '' &&
+      w.doors !== '' &&
+      w.windows !== '' &&
+      w.hasCladding !== null
     )
   }
 
@@ -130,13 +136,44 @@ const isStepValid = computed(() => {
     )
   }
 
+  if (store.currentStep === 5) {
+    const furn = store.furnishing
+
+    return (
+      furn.bedSize !== '' &&
+      furn.sideTableChoice !== '' &&
+      furn.hasSideLamps !== null &&
+      furn.tvUnitChoice !== '' &&
+      furn.chairs.exists !== null &&
+      (furn.chairs.exists === false || furn.chairs.count > 0) &&
+      furn.stools.exists !== null &&
+      (furn.stools.exists === false || furn.stools.count > 0) &&
+      furn.hasDressingTable !== null &&
+      furn.hasCarpet !== null &&
+      furn.hasBench !== null &&
+      furn.acType !== ''
+    )
+  }
+
+  if (store.currentStep === 6) {
+    const a = store.additional
+
+    if (a.hasAdditional === false) return true
+
+    if (a.hasAdditional === true) {
+      return a.notes.trim() !== '' || (a.extraPrice !== null && a.extraPrice > 0)
+    }
+
+    return false
+  }
+
   return true
 })
 
 const handleNext = () => {
   if (!isStepValid.value) return
 
-  if (store.currentStep === 5) {
+  if (store.currentStep === 6) {
     console.log('Generating estimate...', store.$state)
   } else {
     store.nextStep()

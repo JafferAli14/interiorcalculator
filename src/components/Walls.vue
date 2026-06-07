@@ -2,9 +2,7 @@
   <div class="walls-step">
     <header class="step-header text-center mb-4">
       <h2 class="page-title mb-2 text-dark fw-bold">Walls &amp; Paint</h2>
-      <p class="text-muted fs-6 mb-0">
-        Select wall finishes and enter required wall measurements.
-      </p>
+      <p class="text-muted fs-6 mb-0">Select wall finishes and enter required wall measurements.</p>
     </header>
 
     <div class="inputs-stack">
@@ -46,7 +44,9 @@
         <div class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Wall Area</label>
-            <div class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within">
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
               <input
                 v-model.number="store.walls.manualArea"
                 type="number"
@@ -70,7 +70,9 @@
         <div class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Moulding Length</label>
-            <div class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within">
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
               <input
                 v-model.number="store.walls.mouldingLength"
                 type="number"
@@ -156,6 +158,96 @@
             <span class="choice-icon">2</span>
             <strong>Choice 2</strong>
             <small>Premium wallpaper</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- 7. Doors -->
+      <section class="input-block mt-4 mb-4 pb-4 border-bottom">
+        <h3 class="input-block-title h6 fw-bold mb-1">7. Doors</h3>
+        <p class="text-muted small mb-3">Will the doors be changed or retained?</p>
+
+        <div class="option-grid two">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.walls.doors === 'Changed' }"
+            @click="store.walls.doors = 'Changed'"
+          >
+            <span class="choice-icon">C</span>
+            <strong>Changed</strong>
+            <small>Replace existing doors</small>
+          </button>
+
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.walls.doors === 'Retained' }"
+            @click="store.walls.doors = 'Retained'"
+          >
+            <span class="choice-icon">R</span>
+            <strong>Retained</strong>
+            <small>Keep existing doors</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- 8. Windows -->
+      <section class="input-block mb-4 pb-4 border-bottom">
+        <h3 class="input-block-title h6 fw-bold mb-1">8. Windows</h3>
+        <p class="text-muted small mb-3">Will the windows be changed or retained?</p>
+
+        <div class="option-grid two">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.walls.windows === 'Changed' }"
+            @click="store.walls.windows = 'Changed'"
+          >
+            <span class="choice-icon">C</span>
+            <strong>Changed</strong>
+            <small>Replace existing windows</small>
+          </button>
+
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.walls.windows === 'Retained' }"
+            @click="store.walls.windows = 'Retained'"
+          >
+            <span class="choice-icon">R</span>
+            <strong>Retained</strong>
+            <small>Keep existing windows</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- 9. Cladding -->
+      <section class="input-block">
+        <h3 class="input-block-title h6 fw-bold mb-1">9. Cladding</h3>
+        <p class="text-muted small mb-3">Does the room require wall cladding?</p>
+
+        <div class="option-grid two">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.walls.hasCladding === true }"
+            @click="store.walls.hasCladding = true"
+          >
+            <span class="choice-icon">✓</span>
+            <strong>Yes</strong>
+            <small>Add wall cladding</small>
+          </button>
+
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.walls.hasCladding === false }"
+            @click="store.walls.hasCladding = false"
+          >
+            <span class="choice-icon">×</span>
+            <strong>No</strong>
+            <small>No wall cladding</small>
           </button>
         </div>
       </section>

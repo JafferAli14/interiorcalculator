@@ -43,7 +43,9 @@
         <div class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Ceiling Area</label>
-            <div class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within">
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
               <input
                 v-model.number="store.ceiling.manualArea"
                 type="number"
@@ -91,7 +93,9 @@
         <div class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Cornish Length</label>
-            <div class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within">
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
               <input
                 v-model.number="store.ceiling.cornishLength"
                 type="number"
@@ -141,9 +145,39 @@
         </div>
       </section>
 
-      <!-- 5. Curtain Box -->
+      <!-- 5. Chandelier -->
+      <section class="input-block mb-4 pb-4 border-bottom">
+        <h3 class="input-block-title h6 fw-bold mb-1">5. Chandelier</h3>
+        <p class="text-muted small mb-3">Does the ceiling design include a chandelier?</p>
+
+        <div class="option-grid two mb-4">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.ceiling.hasChandelier === true }"
+            @click="store.ceiling.hasChandelier = true"
+          >
+            <span class="choice-icon">✓</span>
+            <strong>Yes</strong>
+            <small>Add chandelier</small>
+          </button>
+
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.ceiling.hasChandelier === false }"
+            @click="store.ceiling.hasChandelier = false"
+          >
+            <span class="choice-icon">×</span>
+            <strong>No</strong>
+            <small>No chandelier required</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- 6. Curtain Box -->
       <section class="input-block">
-        <h3 class="input-block-title h6 fw-bold mb-1">5. Curtain Box</h3>
+        <h3 class="input-block-title h6 fw-bold mb-1">6. Curtain Box</h3>
         <p class="text-muted small mb-3">Does the ceiling design require a curtain box?</p>
 
         <div class="option-grid two mb-4">
@@ -172,10 +206,10 @@
 
         <div v-if="store.ceiling.hasCurtainBox === true" class="row">
           <div class="col-12 col-md-9 col-lg-7">
-            <label class="form-label small fw-bold text-muted mb-2">
-              Curtain Box Length
-            </label>
-            <div class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within">
+            <label class="form-label small fw-bold text-muted mb-2"> Curtain Box Length </label>
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
               <input
                 v-model.number="store.ceiling.curtainBoxLength"
                 type="number"
@@ -239,6 +273,12 @@ const lightingOptions = [
     label: 'Hidden Lights',
     icon: '☾',
     description: 'Soft indirect lighting',
+  },
+  {
+    value: 'Strip' as const,
+    label: 'Strip Light',
+    icon: '━',
+    description: 'Decorative LED strip lighting',
   },
 ]
 </script>

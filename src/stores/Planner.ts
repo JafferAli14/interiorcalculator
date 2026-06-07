@@ -16,13 +16,11 @@ export const usePlannerStore = defineStore('planner', {
     ceiling: {
       level: null as 1 | 2 | null,
       manualArea: null as number | null,
-
       cornishSize: null as 5 | 10 | null,
       cornishLength: null as number | null,
-
-      lightingType: '' as '' | 'Track' | 'Spot' | 'Hidden',
+      lightingType: '' as '' | 'Track' | 'Spot' | 'Hidden' | 'Strip',
       lightsCount: null as number | null,
-
+      hasChandelier: null as boolean | null,
       hasCurtainBox: null as boolean | null,
       curtainBoxLength: null as number | null,
     },
@@ -34,6 +32,9 @@ export const usePlannerStore = defineStore('planner', {
       ceilingPainting: 'White',
       wallPainting: '' as '' | 'Choice 1' | 'Choice 2',
       wallpaper: '' as '' | 'Choice 1' | 'Choice 2',
+      doors: '' as '' | 'Changed' | 'Retained',
+      windows: '' as '' | 'Changed' | 'Retained',
+      hasCladding: null as boolean | null,
     },
 
     flooring: {
@@ -54,11 +55,7 @@ export const usePlannerStore = defineStore('planner', {
 
       sideTableChoice: '' as '' | 'Choice 1',
       hasSideLamps: null as boolean | null,
-
       tvUnitChoice: '' as '' | 'Choice 1',
-
-      coffeeTable: false,
-      console: false,
 
       chairs: {
         exists: null as boolean | null,
@@ -69,6 +66,19 @@ export const usePlannerStore = defineStore('planner', {
         exists: null as boolean | null,
         count: 0,
       },
+
+      hasDressingTable: null as boolean | null,
+      hasCarpet: null as boolean | null,
+      hasBench: null as boolean | null,
+
+      acType: '' as '' | 'Split' | 'Cassette',
+    },
+
+    additional: {
+      hasAdditional: null as boolean | null,
+      notes: '',
+      extraPrice: null as number | null,
+      finishLevel: 2 as 1 | 2 | 3,
     },
   }),
 
@@ -97,7 +107,7 @@ export const usePlannerStore = defineStore('planner', {
       return 2 * (state.dimensions.length + state.dimensions.width)
     },
 
-    progressPercentage: (state) => (state.currentStep / 5) * 100,
+    progressPercentage: (state) => (state.currentStep / 6) * 100,
   },
 
   actions: {
@@ -110,7 +120,7 @@ export const usePlannerStore = defineStore('planner', {
     },
 
     nextStep() {
-      if (this.currentStep < 5) this.currentStep++
+      if (this.currentStep < 6) this.currentStep++
     },
 
     prevStep() {

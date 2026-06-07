@@ -2,9 +2,7 @@
   <div class="furnishing-step">
     <header class="step-header text-center mb-4">
       <h2 class="page-title mb-2 text-dark fw-bold">Room Furnishing</h2>
-      <p class="text-muted fs-6 mb-0">
-        Select bed setup and furniture options for the bedroom.
-      </p>
+      <p class="text-muted fs-6 mb-0">Select bed setup and furniture options for the bedroom.</p>
     </header>
 
     <div class="inputs-stack">
@@ -87,7 +85,9 @@
         <div class="option-grid one">
           <button
             type="button"
-            class="choice-card selected"
+            class="choice-card"
+            :class="{ selected: store.furnishing.sideTableChoice === 'Choice 1' }"
+            @click="store.furnishing.sideTableChoice = 'Choice 1'"
           >
             <span class="choice-icon">1</span>
             <strong>Choice 1</strong>
@@ -134,7 +134,9 @@
         <div class="option-grid one">
           <button
             type="button"
-            class="choice-card selected"
+            class="choice-card"
+            :class="{ selected: store.furnishing.tvUnitChoice === 'Choice 1' }"
+            @click="store.furnishing.tvUnitChoice = 'Choice 1'"
           >
             <span class="choice-icon">1</span>
             <strong>Choice 1</strong>
@@ -229,32 +231,124 @@
         </div>
       </section>
 
-      <!-- 8. Other Furniture -->
-      <section class="input-block">
-        <h3 class="input-block-title h6 fw-bold mb-1">8. Other Furniture</h3>
-        <p class="text-muted small mb-3">Select additional furniture items.</p>
+      <!-- 8. Dressing Table -->
+      <section class="input-block mb-4 pb-4 border-bottom">
+        <h3 class="input-block-title h6 fw-bold mb-1">8. Dressing Table</h3>
+        <p class="text-muted small mb-3">Do you need a dressing table?</p>
 
         <div class="option-grid two">
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.furnishing.coffeeTable }"
-            @click="store.furnishing.coffeeTable = !store.furnishing.coffeeTable"
+            :class="{ selected: store.furnishing.hasDressingTable === true }"
+            @click="store.furnishing.hasDressingTable = true"
           >
-            <span class="choice-icon">CT</span>
-            <strong>Coffee Table</strong>
-            <small>Tap to select/deselect</small>
+            <span class="choice-icon">✓</span>
+            <strong>Yes</strong>
+            <small>Add dressing table</small>
           </button>
 
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.furnishing.console }"
-            @click="store.furnishing.console = !store.furnishing.console"
+            :class="{ selected: store.furnishing.hasDressingTable === false }"
+            @click="store.furnishing.hasDressingTable = false"
+          >
+            <span class="choice-icon">×</span>
+            <strong>No</strong>
+            <small>No dressing table</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- 9. Carpet -->
+      <section class="input-block mb-4 pb-4 border-bottom">
+        <h3 class="input-block-title h6 fw-bold mb-1">9. Carpet</h3>
+        <p class="text-muted small mb-3">Do you need a carpet?</p>
+
+        <div class="option-grid two">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.furnishing.hasCarpet === true }"
+            @click="store.furnishing.hasCarpet = true"
+          >
+            <span class="choice-icon">✓</span>
+            <strong>Yes</strong>
+            <small>Add carpet</small>
+          </button>
+
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.furnishing.hasCarpet === false }"
+            @click="store.furnishing.hasCarpet = false"
+          >
+            <span class="choice-icon">×</span>
+            <strong>No</strong>
+            <small>No carpet</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- 10. Bench -->
+      <section class="input-block mb-4 pb-4 border-bottom">
+        <h3 class="input-block-title h6 fw-bold mb-1">10. Bench</h3>
+
+        <p class="text-muted small mb-3">Bench placed at the foot of the bed.</p>
+
+        <div class="option-grid two">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.furnishing.hasBench === true }"
+            @click="store.furnishing.hasBench = true"
+          >
+            <span class="choice-icon">✓</span>
+            <strong>Yes</strong>
+            <small>Add bench</small>
+          </button>
+
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.furnishing.hasBench === false }"
+            @click="store.furnishing.hasBench = false"
+          >
+            <span class="choice-icon">×</span>
+            <strong>No</strong>
+            <small>No bench</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- 11. A/C Type -->
+      <section class="input-block">
+        <h3 class="input-block-title h6 fw-bold mb-1">11. A/C Type</h3>
+
+        <p class="text-muted small mb-3">Select the air conditioning type.</p>
+
+        <div class="option-grid two">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.furnishing.acType === 'Split' }"
+            @click="store.furnishing.acType = 'Split'"
+          >
+            <span class="choice-icon">S</span>
+            <strong>Split A/C</strong>
+            <small>Wall mounted system</small>
+          </button>
+
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.furnishing.acType === 'Cassette' }"
+            @click="store.furnishing.acType = 'Cassette'"
           >
             <span class="choice-icon">C</span>
-            <strong>Console</strong>
-            <small>Tap to select/deselect</small>
+            <strong>Cassette A/C</strong>
+            <small>Ceiling mounted system</small>
           </button>
         </div>
       </section>
