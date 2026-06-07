@@ -4,90 +4,99 @@ export const usePlannerStore = defineStore('planner', {
   state: () => ({
     currentStep: 1,
 
-    // 1. Design Requirements
     design: {
-      style: '', // Modern, Neo-classic, Classic
-      // manualPopUpArea: null as number | null,
+      style: '',
     },
+
     dimensions: {
       length: 0,
       width: 0,
     },
 
-    // 2. Ceiling & Lighting
     ceiling: {
-      level: 1, // Choice of Level 1 or Level 2
-      manualArea: null as number | null, // User can override ceiling area
-      cornishSize: 5, // 5cm or 10cm
-      lighting: [] as string[], // Track, spot, or hidden lights
-      hasCurtainBox: false,
+      level: null as 1 | 2 | null,
+      manualArea: null as number | null,
+
+      cornishSize: null as 5 | 10 | null,
+      cornishLength: null as number | null,
+
+      lightingType: '' as '' | 'Track' | 'Spot' | 'Hidden',
+      lightsCount: null as number | null,
+
+      hasCurtainBox: null as boolean | null,
+      curtainBoxLength: null as number | null,
     },
 
-    // 3. Walls & Flooring
     walls: {
-      curtainChoice: 'Choice 1',
-      manualArea: null as number | null, // User can override wall area
-      mouldingSize: 0, // linear meters
+      curtainChoice: '' as '' | 'Choice 1' | 'Choice 2',
+      manualArea: null as number | null,
+      mouldingLength: null as number | null,
       ceilingPainting: 'White',
-      wallPainting: 'Choice 1',
-      wallpaper: 'Choice 1',
-    },
-    flooring: {
-      material: 'Porcelain', // Porcelain, Marble, or Granite
-      manualArea: null as number | null, // User can override floor area
-      tileSize: '120x120', // 120x120 or 60x60
-      skirtingSize: 10, // 10cm or 15cm
-      hasParquet: false,
-      hasGlassWork: false,
+      wallPainting: '' as '' | 'Choice 1' | 'Choice 2',
+      wallpaper: '' as '' | 'Choice 1' | 'Choice 2',
     },
 
-    // 4. Furnishing Part
+    flooring: {
+      material: '' as '' | 'Porcelain' | 'Marble' | 'Granite',
+      manualArea: null as number | null,
+      tileSize: '' as '' | '120x120' | '60x60',
+      skirtingSize: null as 10 | 15 | null,
+      hasParquet: null as boolean | null,
+      hasGlassWork: null as boolean | null,
+    },
+
     furnishing: {
-      // Bed Setup
-      bedSize: 'King', // King or Queen size
+      bedSize: '' as '' | 'King' | 'Queen',
+
       hasHeadboard: false,
       hasBedsideCladding: false,
       hasDuvet: false,
-      // Furniture Items
-      sideTableChoice: 'Choice 1',
-      hasSideLamps: false,
-      tvUnitChoice: 'Choice 1',
+
+      sideTableChoice: '' as '' | 'Choice 1',
+      hasSideLamps: null as boolean | null,
+
+      tvUnitChoice: '' as '' | 'Choice 1',
+
       coffeeTable: false,
       console: false,
-      // Quantities
-      chairs: { exists: false, count: 0 },
-      stools: { exists: false, count: 0 },
+
+      chairs: {
+        exists: null as boolean | null,
+        count: 0,
+      },
+
+      stools: {
+        exists: null as boolean | null,
+        count: 0,
+      },
     },
   }),
 
   getters: {
-    // Basic math: L * W
     calculatedBaseArea: (state) => {
       return state.dimensions.length * state.dimensions.width
     },
 
-    // Dynamic Floor Area: Uses manual input if provided, otherwise calculates
     displayFloorArea(): number {
       if (this.flooring.manualArea !== null && this.flooring.manualArea > 0) {
         return this.flooring.manualArea
       }
+
       return this.calculatedBaseArea
     },
 
-    // Dynamic Ceiling Area
     displayCeilingArea(): number {
       if (this.ceiling.manualArea !== null && this.ceiling.manualArea > 0) {
         return this.ceiling.manualArea
       }
+
       return this.calculatedBaseArea
     },
 
-    // Linear Meters for Cornish/Moulding: 2 * (L + W)
     calculateLinearMeters: (state) => {
       return 2 * (state.dimensions.length + state.dimensions.width)
     },
 
-    // Progress percentage for UI
     progressPercentage: (state) => (state.currentStep / 5) * 100,
   },
 
@@ -95,12 +104,19 @@ export const usePlannerStore = defineStore('planner', {
     setDesignStyle(style: string) {
       this.design.style = style
     },
+
+    setCeilingLevel(level: 1 | 2) {
+      this.ceiling.level = level
+    },
+
     nextStep() {
       if (this.currentStep < 5) this.currentStep++
     },
+
     prevStep() {
       if (this.currentStep > 1) this.currentStep--
     },
+
     resetPlanner() {
       this.$reset()
     },
