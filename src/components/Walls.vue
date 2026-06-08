@@ -11,28 +11,21 @@
         <h3 class="input-block-title h6 fw-bold mb-1">1. Curtains</h3>
         <p class="text-muted small mb-3">Choose the curtain option.</p>
 
-        <div class="option-grid two">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.curtainChoice === 'Choice 1' }"
-            @click="store.walls.curtainChoice = 'Choice 1'"
+        <div class="image-option-grid two">
+          <div
+            v-for="option in curtainOptions"
+            :key="option.value"
+            class="image-option-cell"
+            @click="store.walls.curtainChoice = option.value"
           >
-            <span class="choice-icon">1</span>
-            <strong>Choice 1</strong>
-            <small>Standard curtain option</small>
-          </button>
-
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.curtainChoice === 'Choice 2' }"
-            @click="store.walls.curtainChoice = 'Choice 2'"
-          >
-            <span class="choice-icon">2</span>
-            <strong>Choice 2</strong>
-            <small>Premium curtain option</small>
-          </button>
+            <StyleCard
+              compact
+              :name="option.name"
+              :description="option.description"
+              :image="option.image"
+              :is-selected="store.walls.curtainChoice === option.value"
+            />
+          </div>
         </div>
       </section>
 
@@ -107,28 +100,21 @@
         <h3 class="input-block-title h6 fw-bold mb-1">5. Wall Painting</h3>
         <p class="text-muted small mb-3">Choose the wall painting option.</p>
 
-        <div class="option-grid two">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.wallPainting === 'Choice 1' }"
-            @click="store.walls.wallPainting = 'Choice 1'"
+        <div class="image-option-grid two">
+          <div
+            v-for="option in wallPaintingOptions"
+            :key="option.value"
+            class="image-option-cell"
+            @click="store.walls.wallPainting = option.value"
           >
-            <span class="choice-icon">1</span>
-            <strong>Choice 1</strong>
-            <small>Standard wall paint</small>
-          </button>
-
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.wallPainting === 'Choice 2' }"
-            @click="store.walls.wallPainting = 'Choice 2'"
-          >
-            <span class="choice-icon">2</span>
-            <strong>Choice 2</strong>
-            <small>Premium wall paint</small>
-          </button>
+            <StyleCard
+              compact
+              :name="option.name"
+              :description="option.description"
+              :image="option.image"
+              :is-selected="store.walls.wallPainting === option.value"
+            />
+          </div>
         </div>
       </section>
 
@@ -137,28 +123,21 @@
         <h3 class="input-block-title h6 fw-bold mb-1">6. Wallpaper</h3>
         <p class="text-muted small mb-3">Choose the wallpaper option.</p>
 
-        <div class="option-grid two">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.wallpaper === 'Choice 1' }"
-            @click="store.walls.wallpaper = 'Choice 1'"
+        <div class="image-option-grid two">
+          <div
+            v-for="option in wallpaperOptions"
+            :key="option.value"
+            class="image-option-cell"
+            @click="store.walls.wallpaper = option.value"
           >
-            <span class="choice-icon">1</span>
-            <strong>Choice 1</strong>
-            <small>Standard wallpaper</small>
-          </button>
-
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.wallpaper === 'Choice 2' }"
-            @click="store.walls.wallpaper = 'Choice 2'"
-          >
-            <span class="choice-icon">2</span>
-            <strong>Choice 2</strong>
-            <small>Premium wallpaper</small>
-          </button>
+            <StyleCard
+              compact
+              :name="option.name"
+              :description="option.description"
+              :image="option.image"
+              :is-selected="store.walls.wallpaper === option.value"
+            />
+          </div>
         </div>
       </section>
 
@@ -167,28 +146,21 @@
         <h3 class="input-block-title h6 fw-bold mb-1">7. Doors</h3>
         <p class="text-muted small mb-3">Will the doors be changed or retained?</p>
 
-        <div class="option-grid two">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.doors === 'Changed' }"
-            @click="store.walls.doors = 'Changed'"
+        <div class="image-option-grid two">
+          <div
+            v-for="option in doorOptions"
+            :key="option.value"
+            class="image-option-cell"
+            @click="store.walls.doors = option.value"
           >
-            <span class="choice-icon">C</span>
-            <strong>Changed</strong>
-            <small>Replace existing doors</small>
-          </button>
-
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.doors === 'Retained' }"
-            @click="store.walls.doors = 'Retained'"
-          >
-            <span class="choice-icon">R</span>
-            <strong>Retained</strong>
-            <small>Keep existing doors</small>
-          </button>
+            <StyleCard
+              compact
+              :name="option.name"
+              :description="option.description"
+              :image="option.image"
+              :is-selected="store.walls.doors === option.value"
+            />
+          </div>
         </div>
       </section>
 
@@ -197,28 +169,21 @@
         <h3 class="input-block-title h6 fw-bold mb-1">8. Windows</h3>
         <p class="text-muted small mb-3">Will the windows be changed or retained?</p>
 
-        <div class="option-grid two">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.windows === 'Changed' }"
-            @click="store.walls.windows = 'Changed'"
+        <div class="image-option-grid two">
+          <div
+            v-for="option in windowOptions"
+            :key="option.value"
+            class="image-option-cell"
+            @click="store.walls.windows = option.value"
           >
-            <span class="choice-icon">C</span>
-            <strong>Changed</strong>
-            <small>Replace existing windows</small>
-          </button>
-
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.walls.windows === 'Retained' }"
-            @click="store.walls.windows = 'Retained'"
-          >
-            <span class="choice-icon">R</span>
-            <strong>Retained</strong>
-            <small>Keep existing windows</small>
-          </button>
+            <StyleCard
+              compact
+              :name="option.name"
+              :description="option.description"
+              :image="option.image"
+              :is-selected="store.walls.windows === option.value"
+            />
+          </div>
         </div>
       </section>
 
@@ -256,9 +221,95 @@
 </template>
 
 <script setup lang="ts">
+import curtains1Img from '@/assets/walls/curtains1.png'
+import curtains2Img from '@/assets/walls/curtains2.png'
+import wallPainting1Img from '@/assets/walls/wallpainting1.png'
+import wallPainting2Img from '@/assets/walls/wallpainting2.png'
+import wallpaper1Img from '@/assets/walls/wallpaper1.png'
+import wallpaper2Img from '@/assets/walls/wallpaper2.png'
+import StyleCard from '@/components/StyleCard.vue'
+import doorsChangedImg from '@/assets/walls/doors-changed.png'
+import doorsRetainedImg from '@/assets/walls/doors-retained.png'
+import windowsChangedImg from '@/assets/walls/windows-changed.png'
+import windowsRetainedImg from '@/assets/walls/windows-retained.png'
 import { usePlannerStore } from '@/stores/Planner'
 
 const store = usePlannerStore()
+
+const curtainOptions = [
+  {
+    value: 'Choice 1' as const,
+    name: 'Choice 1',
+    description: 'Standard curtain option',
+    image: curtains1Img,
+  },
+  {
+    value: 'Choice 2' as const,
+    name: 'Choice 2',
+    description: 'Premium curtain option',
+    image: curtains2Img,
+  },
+]
+
+const wallPaintingOptions = [
+  {
+    value: 'Choice 1' as const,
+    name: 'Choice 1',
+    description: 'Standard wall paint',
+    image: wallPainting1Img,
+  },
+  {
+    value: 'Choice 2' as const,
+    name: 'Choice 2',
+    description: 'Premium wall paint',
+    image: wallPainting2Img,
+  },
+]
+
+const wallpaperOptions = [
+  {
+    value: 'Choice 1' as const,
+    name: 'Choice 1',
+    description: 'Standard wallpaper',
+    image: wallpaper1Img,
+  },
+  {
+    value: 'Choice 2' as const,
+    name: 'Choice 2',
+    description: 'Premium wallpaper',
+    image: wallpaper2Img,
+  },
+]
+
+const doorOptions = [
+  {
+    value: 'Changed' as const,
+    name: 'New Door',
+    description: 'Replace existing doors',
+    image: doorsChangedImg,
+  },
+  {
+    value: 'Retained' as const,
+    name: 'Retain Door',
+    description: 'Keep existing doors',
+    image: doorsRetainedImg,
+  },
+]
+
+const windowOptions = [
+  {
+    value: 'Changed' as const,
+    name: 'New Window',
+    description: 'Replace existing windows',
+    image: windowsChangedImg,
+  },
+  {
+    value: 'Retained' as const,
+    name: 'Retain Window',
+    description: 'Keep existing windows',
+    image: windowsRetainedImg,
+  },
+]
 </script>
 
 <style scoped>
@@ -287,6 +338,19 @@ const store = usePlannerStore()
 
 .option-grid.two {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.image-option-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.image-option-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.image-option-cell {
+  cursor: pointer;
 }
 
 .choice-card {
@@ -371,7 +435,8 @@ const store = usePlannerStore()
     padding: 1.2rem;
   }
 
-  .option-grid.two {
+  .option-grid.two,
+  .image-option-grid.two {
     grid-template-columns: 1fr;
   }
 }

@@ -11,28 +11,21 @@
         <h3 class="input-block-title h6 fw-bold mb-1">1. Bed Size</h3>
         <p class="text-muted small mb-3">Choose the bed size.</p>
 
-        <div class="option-grid two">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.bedSize === 'King' }"
-            @click="store.furnishing.bedSize = 'King'"
+        <div class="image-option-grid two">
+          <div
+            v-for="option in bedOptions"
+            :key="option.value"
+            class="image-option-cell"
+            @click="store.furnishing.bedSize = option.value"
           >
-            <span class="choice-icon">K</span>
-            <strong>King Size</strong>
-            <small>Larger premium bed setup</small>
-          </button>
-
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.bedSize === 'Queen' }"
-            @click="store.furnishing.bedSize = 'Queen'"
-          >
-            <span class="choice-icon">Q</span>
-            <strong>Queen Size</strong>
-            <small>Compact comfortable bed setup</small>
-          </button>
+            <StyleCard
+              compact
+              :name="option.name"
+              :description="option.description"
+              :image="option.image"
+              :is-selected="store.furnishing.bedSize === option.value"
+            />
+          </div>
         </div>
       </section>
 
@@ -41,39 +34,45 @@
         <h3 class="input-block-title h6 fw-bold mb-1">2. Bed Setup</h3>
         <p class="text-muted small mb-3">Select required bed additions.</p>
 
-        <div class="option-grid three">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.hasHeadboard }"
+        <div class="image-option-grid three">
+          <div
+            class="image-option-cell"
             @click="store.furnishing.hasHeadboard = !store.furnishing.hasHeadboard"
           >
-            <span class="choice-icon">HB</span>
-            <strong>Headboard</strong>
-            <small>Tap to select/deselect</small>
-          </button>
+            <StyleCard
+              compact
+              name="Headboard"
+              description="Tap to select/deselect"
+              :image="headboardImg"
+              :is-selected="store.furnishing.hasHeadboard"
+            />
+          </div>
 
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.hasBedsideCladding }"
+          <div
+            class="image-option-cell"
             @click="store.furnishing.hasBedsideCladding = !store.furnishing.hasBedsideCladding"
           >
-            <span class="choice-icon">BC</span>
-            <strong>Bedside Cladding</strong>
-            <small>Tap to select/deselect</small>
-          </button>
+            <StyleCard
+              compact
+              name="Bedside Cladding"
+              description="Tap to select/deselect"
+              :image="bedsideCladdingImg"
+              :is-selected="store.furnishing.hasBedsideCladding"
+            />
+          </div>
 
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.hasDuvet }"
+          <div
+            class="image-option-cell"
             @click="store.furnishing.hasDuvet = !store.furnishing.hasDuvet"
           >
-            <span class="choice-icon">D</span>
-            <strong>Duvet</strong>
-            <small>Tap to select/deselect</small>
-          </button>
+            <StyleCard
+              compact
+              name="Duvet"
+              description="Tap to select/deselect"
+              :image="duvetImg"
+              :is-selected="store.furnishing.hasDuvet"
+            />
+          </div>
         </div>
       </section>
 
@@ -82,17 +81,16 @@
         <h3 class="input-block-title h6 fw-bold mb-1">3. Side Table</h3>
         <p class="text-muted small mb-3">Select side table option.</p>
 
-        <div class="option-grid one">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.sideTableChoice === 'Choice 1' }"
-            @click="store.furnishing.sideTableChoice = 'Choice 1'"
-          >
-            <span class="choice-icon">1</span>
-            <strong>Choice 1</strong>
-            <small>Default side table option</small>
-          </button>
+        <div class="image-option-grid one">
+          <div class="image-option-cell" @click="store.furnishing.sideTableChoice = 'Choice 1'">
+            <StyleCard
+              compact
+              name="Side Table"
+              description="Modern side table"
+              :image="sideTableImg"
+              :is-selected="store.furnishing.sideTableChoice === 'Choice 1'"
+            />
+          </div>
         </div>
       </section>
 
@@ -131,17 +129,16 @@
         <h3 class="input-block-title h6 fw-bold mb-1">5. TV Unit</h3>
         <p class="text-muted small mb-3">Select TV unit option.</p>
 
-        <div class="option-grid one">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.tvUnitChoice === 'Choice 1' }"
-            @click="store.furnishing.tvUnitChoice = 'Choice 1'"
-          >
-            <span class="choice-icon">1</span>
-            <strong>Choice 1</strong>
-            <small>Default TV unit option</small>
-          </button>
+        <div class="image-option-grid one">
+          <div class="image-option-cell" @click="store.furnishing.tvUnitChoice = 'Choice 1'">
+            <StyleCard
+              compact
+              name="TV Unit"
+              description="Modern TV unit"
+              :image="tvUnitImg"
+              :is-selected="store.furnishing.tvUnitChoice === 'Choice 1'"
+            />
+          </div>
         </div>
       </section>
 
@@ -236,29 +233,29 @@
         <h3 class="input-block-title h6 fw-bold mb-1">8. Dressing Table</h3>
         <p class="text-muted small mb-3">Do you need a dressing table?</p>
 
-        <div class="option-grid two">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.hasDressingTable === true }"
-            @click="store.furnishing.hasDressingTable = true"
-          >
-            <span class="choice-icon">✓</span>
-            <strong>Yes</strong>
-            <small>Add dressing table</small>
-          </button>
+       <div class="option-grid two">
+  <button
+    type="button"
+    class="choice-card"
+    :class="{ selected: store.furnishing.hasDressingTable === true }"
+    @click="store.furnishing.hasDressingTable = true"
+  >
+    <span class="choice-icon">✓</span>
+    <strong>Yes</strong>
+    <small>Add dressing table</small>
+  </button>
 
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.hasDressingTable === false }"
-            @click="store.furnishing.hasDressingTable = false"
-          >
-            <span class="choice-icon">×</span>
-            <strong>No</strong>
-            <small>No dressing table</small>
-          </button>
-        </div>
+  <button
+    type="button"
+    class="choice-card"
+    :class="{ selected: store.furnishing.hasDressingTable === false }"
+    @click="store.furnishing.hasDressingTable = false"
+  >
+    <span class="choice-icon">×</span>
+    <strong>No</strong>
+    <small>No dressing table</small>
+  </button>
+</div>
       </section>
 
       <!-- 9. Carpet -->
@@ -328,38 +325,108 @@
 
         <p class="text-muted small mb-3">Select the air conditioning type.</p>
 
-        <div class="option-grid two">
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.acType === 'Split' }"
-            @click="store.furnishing.acType = 'Split'"
-          >
-            <span class="choice-icon">S</span>
-            <strong>Split A/C</strong>
-            <small>Wall mounted system</small>
-          </button>
-
-          <button
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.furnishing.acType === 'Cassette' }"
-            @click="store.furnishing.acType = 'Cassette'"
-          >
-            <span class="choice-icon">C</span>
-            <strong>Cassette A/C</strong>
-            <small>Ceiling mounted system</small>
-          </button>
-        </div>
+       <div class="image-option-grid two">
+  <div
+    v-for="option in acOptions"
+    :key="option.value"
+    class="image-option-cell"
+    @click="store.furnishing.acType = option.value"
+  >
+    <StyleCard
+      compact
+      :name="option.name"
+      :description="option.description"
+      :image="option.image"
+      :is-selected="store.furnishing.acType === option.value"
+    />
+  </div>
+</div>
       </section>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import kingBedImg from '@/assets/Furnishing/king-bed.png'
+import queenBedImg from '@/assets/Furnishing/queen-bed.png'
+import StyleCard from '@/components/StyleCard.vue'
+import headboardImg from '@/assets/Furnishing/headboard.png'
+import bedsideCladdingImg from '@/assets/Furnishing/bedside-cladding.png'
+import duvetImg from '@/assets/Furnishing/duvet.png'
+
+import sideTableImg from '@/assets/Furnishing/side-table.png'
+import tvUnitImg from '@/assets/Furnishing/tv-unit.png'
+
+import splitAcImg from '@/assets/Furnishing/split-ac.png'
+import cassetteImg from '@/assets/Furnishing/cassette.png'
 import { usePlannerStore } from '@/stores/Planner'
 
 const store = usePlannerStore()
+
+const bedOptions = [
+  {
+    value: 'King' as const,
+    name: 'King Size',
+    description: 'Larger premium bed setup',
+    image: kingBedImg,
+  },
+  {
+    value: 'Queen' as const,
+    name: 'Queen Size',
+    description: 'Compact comfortable bed setup',
+    image: queenBedImg,
+  },
+]
+const bedSetupOptions = [
+  {
+    key: 'headboard',
+    name: 'Headboard',
+    image: headboardImg,
+  },
+  {
+    key: 'cladding',
+    name: 'Bedside Cladding',
+    image: bedsideCladdingImg,
+  },
+  {
+    key: 'duvet',
+    name: 'Duvet',
+    image: duvetImg,
+  },
+]
+
+const sideTableOptions = [
+  {
+    value: 'Choice 1',
+    name: 'Side Table',
+    description: 'Modern side table',
+    image: sideTableImg,
+  },
+]
+
+const tvUnitOptions = [
+  {
+    value: 'Choice 1',
+    name: 'TV Unit',
+    description: 'Modern TV unit',
+    image: tvUnitImg,
+  },
+]
+
+const acOptions = [
+  {
+    value: 'Split' as const,
+    name: 'Split A/C',
+    description: 'Wall mounted system',
+    image: splitAcImg,
+  },
+  {
+    value: 'Cassette' as const,
+    name: 'Cassette A/C',
+    description: 'Ceiling mounted system',
+    image: cassetteImg,
+  },
+]
 </script>
 
 <style scoped>
@@ -396,6 +463,27 @@ const store = usePlannerStore()
 
 .option-grid.three {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.image-option-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.image-option-grid.one {
+  grid-template-columns: 1fr;
+}
+
+.image-option-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.image-option-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.image-option-cell {
+  cursor: pointer;
 }
 
 .choice-card {
@@ -459,7 +547,9 @@ const store = usePlannerStore()
   }
 
   .option-grid.two,
-  .option-grid.three {
+  .option-grid.three,
+  .image-option-grid.two,
+  .image-option-grid.three {
     grid-template-columns: 1fr;
   }
 }

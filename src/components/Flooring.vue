@@ -13,20 +13,22 @@
         <h3 class="input-block-title h6 fw-bold mb-1">1. Tile Material</h3>
         <p class="text-muted small mb-3">Choose the main flooring material.</p>
 
-        <div class="option-grid three">
-          <button
-            v-for="item in materialOptions"
-            :key="item.value"
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.flooring.material === item.value }"
-            @click="store.flooring.material = item.value"
-          >
-            <span class="choice-icon">{{ item.icon }}</span>
-            <strong>{{ item.label }}</strong>
-            <small>{{ item.description }}</small>
-          </button>
-        </div>
+        <div class="image-option-grid three">
+  <div
+    v-for="item in materialOptions"
+    :key="item.value"
+    class="image-option-cell"
+    @click="store.flooring.material = item.value"
+  >
+    <StyleCard
+      compact
+      :name="item.label"
+      :description="item.description"
+      :image="item.image"
+      :is-selected="store.flooring.material === item.value"
+    />
+  </div>
+</div>
       </section>
 
       <!-- 2. Tile Area -->
@@ -177,6 +179,10 @@
 </template>
 
 <script setup lang="ts">
+import porcelainImg from '@/assets/Flooring/porcelain.png'
+import marbleImg from '@/assets/Flooring/marble.png'
+import graniteImg from '@/assets/Flooring/granite.png'
+import StyleCard from '@/components/StyleCard.vue'
 import { usePlannerStore } from '@/stores/Planner'
 
 const store = usePlannerStore()
@@ -185,20 +191,20 @@ const materialOptions = [
   {
     value: 'Porcelain' as const,
     label: 'Porcelain',
-    icon: 'P',
     description: 'Durable and modern finish',
+    image: porcelainImg,
   },
   {
     value: 'Marble' as const,
     label: 'Marble',
-    icon: 'M',
     description: 'Luxury natural stone look',
+    image: marbleImg,
   },
   {
     value: 'Granite' as const,
     label: 'Granite',
-    icon: 'G',
     description: 'Strong premium flooring',
+    image: graniteImg,
   },
 ]
 </script>
@@ -233,6 +239,23 @@ const materialOptions = [
 
 .option-grid.three {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.image-option-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.image-option-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.image-option-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.image-option-cell {
+  cursor: pointer;
 }
 
 .choice-card {
@@ -300,9 +323,11 @@ const materialOptions = [
     padding: 1.2rem;
   }
 
-  .option-grid.two,
-  .option-grid.three {
-    grid-template-columns: 1fr;
-  }
+.option-grid.two,
+.option-grid.three,
+.image-option-grid.two,
+.image-option-grid.three {
+  grid-template-columns: 1fr;
+}
 }
 </style>

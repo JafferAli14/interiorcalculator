@@ -116,21 +116,26 @@
         <h3 class="input-block-title h6 fw-bold mb-1">4. Ceiling Lights</h3>
         <p class="text-muted small mb-3">Select lighting type and enter number of lights.</p>
 
-        <div class="option-grid three mb-4">
-          <button
+        <div class="lighting-picker-grid mb-4">
+          <div
             v-for="light in lightingOptions"
             :key="light.value"
-            type="button"
-            class="choice-card"
-            :class="{ selected: store.ceiling.lightingType === light.value }"
+            class="lighting-picker-cell"
+            role="button"
+            tabindex="0"
             @click="store.ceiling.lightingType = light.value"
+            @keydown.enter.prevent="store.ceiling.lightingType = light.value"
+            @keydown.space.prevent="store.ceiling.lightingType = light.value"
           >
-            <span class="choice-icon">{{ light.icon }}</span>
-            <strong>{{ light.label }}</strong>
-            <small>{{ light.description }}</small>
-          </button>
+            <StyleCard
+              compact
+              :name="light.label"
+              :description="light.description"
+              :image="light.image"
+              :is-selected="store.ceiling.lightingType === light.value"
+            />
+          </div>
         </div>
-
         <div class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Number of Lights</label>
@@ -232,6 +237,11 @@
 import level1Img from '@/assets/ceiling/level1.png'
 import level2Img from '@/assets/ceiling/level2.png'
 import StyleCard from '@/components/StyleCard.vue'
+import trackLightImg from '@/assets/ceiling/track-lights.png'
+import spotLightImg from '@/assets/ceiling/spot-lights.png'
+import hiddenLightImg from '@/assets/ceiling/hidden-lights.png'
+import stripLightImg from '@/assets/ceiling/strip-lights.png'
+
 import { usePlannerStore } from '@/stores/Planner'
 
 const store = usePlannerStore()
@@ -259,26 +269,26 @@ const lightingOptions = [
   {
     value: 'Track' as const,
     label: 'Track Lights',
-    icon: '◉',
     description: 'Modern linear lighting',
+    image: trackLightImg,
   },
   {
     value: 'Spot' as const,
     label: 'Spot Lights',
-    icon: '✦',
     description: 'Focused ceiling lighting',
+    image: spotLightImg,
   },
   {
     value: 'Hidden' as const,
     label: 'Hidden Lights',
-    icon: '☾',
     description: 'Soft indirect lighting',
+    image: hiddenLightImg,
   },
   {
     value: 'Strip' as const,
     label: 'Strip Light',
-    icon: '━',
     description: 'Decorative LED strip lighting',
+    image: stripLightImg,
   },
 ]
 </script>
@@ -331,6 +341,22 @@ const lightingOptions = [
 
 .option-grid.three {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.lighting-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.lighting-picker-cell {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  outline: none;
+}
+
+.lighting-picker-cell:hover {
+  transform: translateY(-2px);
 }
 
 .choice-card {
@@ -420,7 +446,8 @@ input::-webkit-inner-spin-button {
   }
 
   .option-grid.two,
-  .option-grid.three {
+  .option-grid.three,
+  .lighting-picker-grid {
     grid-template-columns: 1fr;
   }
 }
