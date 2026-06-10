@@ -2,6 +2,8 @@
   <div class="planner-wrapper">
     <div class="container planner-inner py-5">
       <header class="text-center" :class="store.currentStep > 1 ? 'mb-5' : 'mb-4'">
+        <button class="logout-btn" @click="logout">Logout</button>
+        
         <h1 class="display-5 fw-bold mb-3">Bedroom Planner</h1>
 
         <div class="progress-container mx-auto" style="max-width: 760px">
@@ -58,6 +60,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { usePlannerStore } from '@/stores/Planner'
 
 import Design from '@/components/Design.vue'
@@ -68,6 +72,15 @@ import Furnishing from '@/components/Furnishing.vue'
 import AdditionalInput from '@/components/AdditionalInput.vue'
 
 const store = usePlannerStore()
+
+const router = useRouter()
+
+const logout = () => {
+  localStorage.removeItem('adminToken')
+  localStorage.removeItem('adminUser')
+
+  router.push('/login')
+}
 
 const steps = [
   { label: 'Style' },
@@ -198,6 +211,25 @@ const handleNext = () => {
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 0 0.5rem;
+}
+
+.logout-btn {
+  position: fixed;
+  top: 22px;
+  right: 28px;
+  z-index: 1000;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #2c2c2c;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.logout-btn:hover {
+  background: #000;
 }
 
 .tracker-inner {

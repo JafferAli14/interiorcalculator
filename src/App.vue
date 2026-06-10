@@ -1,7 +1,7 @@
 <template>
-  <DesignPage />
+  <RouterView />
 </template>
 
 <script setup lang="ts">
-import DesignPage from './pages/DesignPage.vue'
+import { RouterView } from 'vue-router'
 </script>
