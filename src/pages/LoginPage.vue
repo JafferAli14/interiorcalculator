@@ -61,7 +61,7 @@ const handleLogin = async () => {
       localStorage.removeItem('rememberedUsername')
     }
 
-    router.push('/')
+    router.push('/dashboard')
   } catch (err) {
     error.value = 'Invalid username or password'
   } finally {
