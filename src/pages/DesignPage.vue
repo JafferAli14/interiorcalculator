@@ -3,7 +3,7 @@
     <div class="container planner-inner py-5">
       <header class="text-center" :class="store.currentStep > 1 ? 'mb-5' : 'mb-4'">
         <button class="logout-btn" @click="logout">Logout</button>
-        
+
         <h1 class="display-5 fw-bold mb-3">Bedroom Planner</h1>
 
         <div class="progress-container mx-auto" style="max-width: 760px">
@@ -111,10 +111,18 @@ const isStepValid = computed(() => {
 
     return (
       c.level !== null &&
+      c.manualArea !== null &&
+      c.manualArea > 0 &&
       c.cornishSize !== null &&
+      c.cornishLength !== null &&
+      c.cornishLength > 0 &&
       c.lightingType !== '' &&
+      c.lightsCount !== null &&
+      c.lightsCount > 0 &&
       c.hasChandelier !== null &&
-      c.hasCurtainBox !== null
+      (c.hasChandelier === false || (c.chandelierQuantity !== null && c.chandelierQuantity > 0)) &&
+      c.hasCurtainBox !== null &&
+      (c.hasCurtainBox === false || (c.curtainBoxLength !== null && c.curtainBoxLength > 0))
     )
   }
 
@@ -123,6 +131,8 @@ const isStepValid = computed(() => {
 
     return (
       w.curtainChoice !== '' &&
+      w.curtainLength !== null &&
+      w.curtainLength > 0 &&
       w.manualArea !== null &&
       w.manualArea > 0 &&
       w.mouldingLength !== null &&
@@ -130,8 +140,11 @@ const isStepValid = computed(() => {
       w.wallPainting !== '' &&
       w.wallpaper !== '' &&
       w.doors !== '' &&
+      (w.doors === 'Retained' || (w.doorQuantity !== null && w.doorQuantity > 0)) &&
       w.windows !== '' &&
-      w.hasCladding !== null
+      (w.windows === 'Retained' || (w.windowQuantity !== null && w.windowQuantity > 0)) &&
+      w.hasCladding !== null &&
+      (w.hasCladding === false || (w.claddingArea !== null && w.claddingArea > 0))
     )
   }
 
@@ -144,8 +157,12 @@ const isStepValid = computed(() => {
       f.manualArea > 0 &&
       f.tileSize !== '' &&
       f.skirtingSize !== null &&
+      f.skirtingLength !== null &&
+      f.skirtingLength > 0 &&
       f.hasParquet !== null &&
-      f.hasGlassWork !== null
+      (f.hasParquet === false || (f.parquetArea !== null && f.parquetArea > 0)) &&
+      f.hasGlassWork !== null &&
+      (f.hasGlassWork === false || (f.glassWorkArea !== null && f.glassWorkArea > 0))
     )
   }
 
@@ -154,8 +171,14 @@ const isStepValid = computed(() => {
 
     return (
       furn.bedSize !== '' &&
+      (furn.hasBedsideCladding === false ||
+        (furn.bedsideCladdingArea !== null && furn.bedsideCladdingArea > 0)) &&
       furn.sideTableChoice !== '' &&
+      furn.sideTableQuantity !== null &&
+      furn.sideTableQuantity > 0 &&
       furn.hasSideLamps !== null &&
+      (furn.hasSideLamps === false ||
+        (furn.sideLampQuantity !== null && furn.sideLampQuantity > 0)) &&
       furn.tvUnitChoice !== '' &&
       furn.chairs.exists !== null &&
       (furn.chairs.exists === false || furn.chairs.count > 0) &&
@@ -163,8 +186,11 @@ const isStepValid = computed(() => {
       (furn.stools.exists === false || furn.stools.count > 0) &&
       furn.hasDressingTable !== null &&
       furn.hasCarpet !== null &&
+      (furn.hasCarpet === false || (furn.carpetArea !== null && furn.carpetArea > 0)) &&
       furn.hasBench !== null &&
-      furn.acType !== ''
+      furn.acType !== '' &&
+      furn.acQuantity !== null &&
+      furn.acQuantity > 0
     )
   }
 

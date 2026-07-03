@@ -50,7 +50,13 @@
 
           <div
             class="image-option-cell"
-            @click="store.furnishing.hasBedsideCladding = !store.furnishing.hasBedsideCladding"
+            @click="
+              store.furnishing.hasBedsideCladding = !store.furnishing.hasBedsideCladding;
+              if (!store.furnishing.hasBedsideCladding) store.furnishing.bedsideCladdingArea = null;
+              if (store.furnishing.hasBedsideCladding)
+                store.furnishing.bedsideCladdingArea =
+                  store.furnishing.bedsideCladdingArea || 1;
+            "
           >
             <StyleCard
               compact
@@ -74,6 +80,26 @@
             />
           </div>
         </div>
+
+        <div v-if="store.furnishing.hasBedsideCladding" class="row mt-4">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">Bedside Cladding Area</label>
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
+              <input
+                v-model.number="store.furnishing.bedsideCladdingArea"
+                type="number"
+                class="form-control border-0 px-3"
+                placeholder="Ex: 60"
+                min="1"
+              />
+              <span class="input-group-text bg-white border-0 text-muted fw-bold pe-4">
+                sq ft
+              </span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- 3. Side Table -->
@@ -82,13 +108,32 @@
         <p class="text-muted small mb-3">Select side table option.</p>
 
         <div class="image-option-grid one">
-          <div class="image-option-cell" @click="store.furnishing.sideTableChoice = 'Choice 1'">
+          <div
+            class="image-option-cell"
+            @click="
+              store.furnishing.sideTableChoice = 'Choice 1';
+              store.furnishing.sideTableQuantity = store.furnishing.sideTableQuantity || 1;
+            "
+          >
             <StyleCard
               compact
               name="Side Table"
               description="Modern side table"
               :image="sideTableImg"
               :is-selected="store.furnishing.sideTableChoice === 'Choice 1'"
+            />
+          </div>
+        </div>
+
+        <div v-if="store.furnishing.sideTableChoice" class="row mt-4">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">Side Table Quantity</label>
+            <input
+              v-model.number="store.furnishing.sideTableQuantity"
+              type="number"
+              class="form-control form-control-lg rounded-3 shadow-sm"
+              placeholder="Ex: 2"
+              min="1"
             />
           </div>
         </div>
@@ -99,12 +144,15 @@
         <h3 class="input-block-title h6 fw-bold mb-1">4. Side Lamps</h3>
         <p class="text-muted small mb-3">Do you need side lamps?</p>
 
-        <div class="option-grid two">
+        <div class="option-grid two mb-4">
           <button
             type="button"
             class="choice-card"
             :class="{ selected: store.furnishing.hasSideLamps === true }"
-            @click="store.furnishing.hasSideLamps = true"
+            @click="
+              store.furnishing.hasSideLamps = true;
+              store.furnishing.sideLampQuantity = store.furnishing.sideLampQuantity || 1;
+            "
           >
             <span class="choice-icon">✓</span>
             <strong>Yes</strong>
@@ -115,12 +163,28 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.furnishing.hasSideLamps === false }"
-            @click="store.furnishing.hasSideLamps = false"
+            @click="
+              store.furnishing.hasSideLamps = false;
+              store.furnishing.sideLampQuantity = null;
+            "
           >
             <span class="choice-icon">×</span>
             <strong>No</strong>
             <small>No side lamps</small>
           </button>
+        </div>
+
+        <div v-if="store.furnishing.hasSideLamps === true" class="row">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">Side Lamp Quantity</label>
+            <input
+              v-model.number="store.furnishing.sideLampQuantity"
+              type="number"
+              class="form-control form-control-lg rounded-3 shadow-sm"
+              placeholder="Ex: 2"
+              min="1"
+            />
+          </div>
         </div>
       </section>
 
@@ -152,7 +216,10 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.furnishing.chairs.exists === true }"
-            @click="store.furnishing.chairs.exists = true"
+            @click="
+              store.furnishing.chairs.exists = true;
+              store.furnishing.chairs.count = store.furnishing.chairs.count || 1;
+            "
           >
             <span class="choice-icon">✓</span>
             <strong>Yes</strong>
@@ -163,7 +230,10 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.furnishing.chairs.exists === false }"
-            @click="store.furnishing.chairs.exists = false; store.furnishing.chairs.count = 0"
+            @click="
+              store.furnishing.chairs.exists = false;
+              store.furnishing.chairs.count = 0;
+            "
           >
             <span class="choice-icon">×</span>
             <strong>No</strong>
@@ -195,7 +265,10 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.furnishing.stools.exists === true }"
-            @click="store.furnishing.stools.exists = true"
+            @click="
+              store.furnishing.stools.exists = true;
+              store.furnishing.stools.count = store.furnishing.stools.count || 1;
+            "
           >
             <span class="choice-icon">✓</span>
             <strong>Yes</strong>
@@ -206,7 +279,10 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.furnishing.stools.exists === false }"
-            @click="store.furnishing.stools.exists = false; store.furnishing.stools.count = 0"
+            @click="
+              store.furnishing.stools.exists = false;
+              store.furnishing.stools.count = 0;
+            "
           >
             <span class="choice-icon">×</span>
             <strong>No</strong>
@@ -233,29 +309,29 @@
         <h3 class="input-block-title h6 fw-bold mb-1">8. Dressing Table</h3>
         <p class="text-muted small mb-3">Do you need a dressing table?</p>
 
-       <div class="option-grid two">
-  <button
-    type="button"
-    class="choice-card"
-    :class="{ selected: store.furnishing.hasDressingTable === true }"
-    @click="store.furnishing.hasDressingTable = true"
-  >
-    <span class="choice-icon">✓</span>
-    <strong>Yes</strong>
-    <small>Add dressing table</small>
-  </button>
+        <div class="option-grid two">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.furnishing.hasDressingTable === true }"
+            @click="store.furnishing.hasDressingTable = true"
+          >
+            <span class="choice-icon">✓</span>
+            <strong>Yes</strong>
+            <small>Add dressing table</small>
+          </button>
 
-  <button
-    type="button"
-    class="choice-card"
-    :class="{ selected: store.furnishing.hasDressingTable === false }"
-    @click="store.furnishing.hasDressingTable = false"
-  >
-    <span class="choice-icon">×</span>
-    <strong>No</strong>
-    <small>No dressing table</small>
-  </button>
-</div>
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.furnishing.hasDressingTable === false }"
+            @click="store.furnishing.hasDressingTable = false"
+          >
+            <span class="choice-icon">×</span>
+            <strong>No</strong>
+            <small>No dressing table</small>
+          </button>
+        </div>
       </section>
 
       <!-- 9. Carpet -->
@@ -263,12 +339,15 @@
         <h3 class="input-block-title h6 fw-bold mb-1">9. Carpet</h3>
         <p class="text-muted small mb-3">Do you need a carpet?</p>
 
-        <div class="option-grid two">
+        <div class="option-grid two mb-4">
           <button
             type="button"
             class="choice-card"
             :class="{ selected: store.furnishing.hasCarpet === true }"
-            @click="store.furnishing.hasCarpet = true"
+            @click="
+              store.furnishing.hasCarpet = true;
+              store.furnishing.carpetArea = store.furnishing.carpetArea || 1;
+            "
           >
             <span class="choice-icon">✓</span>
             <strong>Yes</strong>
@@ -279,19 +358,41 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.furnishing.hasCarpet === false }"
-            @click="store.furnishing.hasCarpet = false"
+            @click="
+              store.furnishing.hasCarpet = false;
+              store.furnishing.carpetArea = null;
+            "
           >
             <span class="choice-icon">×</span>
             <strong>No</strong>
             <small>No carpet</small>
           </button>
         </div>
+
+        <div v-if="store.furnishing.hasCarpet === true" class="row">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">Carpet Area</label>
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
+              <input
+                v-model.number="store.furnishing.carpetArea"
+                type="number"
+                class="form-control border-0 px-3"
+                placeholder="Ex: 80"
+                min="1"
+              />
+              <span class="input-group-text bg-white border-0 text-muted fw-bold pe-4">
+                sq ft
+              </span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- 10. Bench -->
       <section class="input-block mb-4 pb-4 border-bottom">
         <h3 class="input-block-title h6 fw-bold mb-1">10. Bench</h3>
-
         <p class="text-muted small mb-3">Bench placed at the foot of the bed.</p>
 
         <div class="option-grid two">
@@ -322,25 +423,40 @@
       <!-- 11. A/C Type -->
       <section class="input-block">
         <h3 class="input-block-title h6 fw-bold mb-1">11. A/C Type</h3>
-
         <p class="text-muted small mb-3">Select the air conditioning type.</p>
 
-       <div class="image-option-grid two">
-  <div
-    v-for="option in acOptions"
-    :key="option.value"
-    class="image-option-cell"
-    @click="store.furnishing.acType = option.value"
-  >
-    <StyleCard
-      compact
-      :name="option.name"
-      :description="option.description"
-      :image="option.image"
-      :is-selected="store.furnishing.acType === option.value"
-    />
-  </div>
-</div>
+        <div class="image-option-grid two">
+          <div
+            v-for="option in acOptions"
+            :key="option.value"
+            class="image-option-cell"
+            @click="
+              store.furnishing.acType = option.value;
+              store.furnishing.acQuantity = store.furnishing.acQuantity || 1;
+            "
+          >
+            <StyleCard
+              compact
+              :name="option.name"
+              :description="option.description"
+              :image="option.image"
+              :is-selected="store.furnishing.acType === option.value"
+            />
+          </div>
+        </div>
+
+        <div v-if="store.furnishing.acType" class="row mt-4">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">A/C Quantity</label>
+            <input
+              v-model.number="store.furnishing.acQuantity"
+              type="number"
+              class="form-control form-control-lg rounded-3 shadow-sm"
+              placeholder="Ex: 1"
+              min="1"
+            />
+          </div>
+        </div>
       </section>
     </div>
   </div>
@@ -353,10 +469,8 @@ import StyleCard from '@/components/StyleCard.vue'
 import headboardImg from '@/assets/Furnishing/headboard.png'
 import bedsideCladdingImg from '@/assets/Furnishing/bedside-cladding.png'
 import duvetImg from '@/assets/Furnishing/duvet.png'
-
 import sideTableImg from '@/assets/Furnishing/side-table.png'
 import tvUnitImg from '@/assets/Furnishing/tv-unit.png'
-
 import splitAcImg from '@/assets/Furnishing/split-ac.png'
 import cassetteImg from '@/assets/Furnishing/cassette.png'
 import { usePlannerStore } from '@/stores/Planner'
@@ -375,41 +489,6 @@ const bedOptions = [
     name: 'Queen Size',
     description: 'Compact comfortable bed setup',
     image: queenBedImg,
-  },
-]
-const bedSetupOptions = [
-  {
-    key: 'headboard',
-    name: 'Headboard',
-    image: headboardImg,
-  },
-  {
-    key: 'cladding',
-    name: 'Bedside Cladding',
-    image: bedsideCladdingImg,
-  },
-  {
-    key: 'duvet',
-    name: 'Duvet',
-    image: duvetImg,
-  },
-]
-
-const sideTableOptions = [
-  {
-    value: 'Choice 1',
-    name: 'Side Table',
-    description: 'Modern side table',
-    image: sideTableImg,
-  },
-]
-
-const tvUnitOptions = [
-  {
-    value: 'Choice 1',
-    name: 'TV Unit',
-    description: 'Modern TV unit',
-    image: tvUnitImg,
   },
 ]
 
@@ -539,6 +618,11 @@ const acOptions = [
   display: block;
   color: #6c757d;
   line-height: 1.4;
+}
+
+.custom-focus-within:focus-within {
+  border-color: #c9ae87 !important;
+  box-shadow: 0 0 0 3px rgba(201, 174, 135, 0.12) !important;
 }
 
 @media (max-width: 768px) {

@@ -21,20 +21,25 @@ export const usePlannerStore = defineStore('planner', {
       lightingType: '' as '' | 'Track' | 'Spot' | 'Hidden' | 'Strip',
       lightsCount: null as number | null,
       hasChandelier: null as boolean | null,
+      chandelierQuantity: null as number | null,
       hasCurtainBox: null as boolean | null,
       curtainBoxLength: null as number | null,
     },
 
     walls: {
       curtainChoice: '' as '' | 'Choice 1' | 'Choice 2',
+      curtainLength: null as number | null,
       manualArea: null as number | null,
       mouldingLength: null as number | null,
       ceilingPainting: 'White',
       wallPainting: '' as '' | 'Choice 1' | 'Choice 2',
       wallpaper: '' as '' | 'Choice 1' | 'Choice 2',
       doors: '' as '' | 'Changed' | 'Retained',
+      doorQuantity: null as number | null,
       windows: '' as '' | 'Changed' | 'Retained',
+      windowQuantity: null as number | null,
       hasCladding: null as boolean | null,
+      claddingArea: null as number | null,
     },
 
     flooring: {
@@ -42,8 +47,11 @@ export const usePlannerStore = defineStore('planner', {
       manualArea: null as number | null,
       tileSize: '' as '' | '120x120' | '60x60',
       skirtingSize: null as 10 | 15 | null,
+      skirtingLength: null as number | null,
       hasParquet: null as boolean | null,
+      parquetArea: null as number | null,
       hasGlassWork: null as boolean | null,
+      glassWorkArea: null as number | null,
     },
 
     furnishing: {
@@ -51,10 +59,15 @@ export const usePlannerStore = defineStore('planner', {
 
       hasHeadboard: false,
       hasBedsideCladding: false,
+      bedsideCladdingArea: null as number | null,
       hasDuvet: false,
 
       sideTableChoice: '' as '' | 'Choice 1',
+      sideTableQuantity: null as number | null,
+
       hasSideLamps: null as boolean | null,
+      sideLampQuantity: null as number | null,
+
       tvUnitChoice: '' as '' | 'Choice 1',
 
       chairs: {
@@ -69,9 +82,11 @@ export const usePlannerStore = defineStore('planner', {
 
       hasDressingTable: null as boolean | null,
       hasCarpet: null as boolean | null,
+      carpetArea: null as number | null,
       hasBench: null as boolean | null,
 
       acType: '' as '' | 'Split' | 'Cassette',
+      acQuantity: null as number | null,
     },
 
     additional: {

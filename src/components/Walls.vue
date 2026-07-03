@@ -7,11 +7,14 @@
 
     <div class="inputs-stack">
       <!-- 1. Curtains -->
+      <!-- 1. Curtains -->
       <section class="input-block mb-4 pb-4 border-bottom">
         <h3 class="input-block-title h6 fw-bold mb-1">1. Curtains</h3>
-        <p class="text-muted small mb-3">Choose the curtain option.</p>
+        <p class="text-muted small mb-3">
+          Choose the curtain option and enter total curtain length.
+        </p>
 
-        <div class="image-option-grid two">
+        <div class="image-option-grid two mb-4">
           <div
             v-for="option in curtainOptions"
             :key="option.value"
@@ -25,6 +28,26 @@
               :image="option.image"
               :is-selected="store.walls.curtainChoice === option.value"
             />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">Curtain Length</label>
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
+              <input
+                v-model.number="store.walls.curtainLength"
+                type="number"
+                class="form-control border-0 px-3"
+                placeholder="Ex: 12"
+                min="1"
+              />
+              <span class="input-group-text bg-white border-0 text-muted fw-bold pe-4">
+                linear meter
+              </span>
+            </div>
           </div>
         </div>
       </section>
@@ -142,16 +165,22 @@
       </section>
 
       <!-- 7. Doors -->
+      <!-- 7. Doors -->
       <section class="input-block mt-4 mb-4 pb-4 border-bottom">
         <h3 class="input-block-title h6 fw-bold mb-1">7. Doors</h3>
         <p class="text-muted small mb-3">Will the doors be changed or retained?</p>
 
-        <div class="image-option-grid two">
+        <div class="image-option-grid two mb-4">
           <div
             v-for="option in doorOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="store.walls.doors = option.value"
+            @click="
+              store.walls.doors = option.value;
+              if (option.value === 'Retained') store.walls.doorQuantity = null;
+              if (option.value === 'Changed')
+                store.walls.doorQuantity = store.walls.doorQuantity || 1;
+            "
           >
             <StyleCard
               compact
@@ -162,19 +191,38 @@
             />
           </div>
         </div>
+
+        <div v-if="store.walls.doors === 'Changed'" class="row">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">Door Quantity</label>
+            <input
+              v-model.number="store.walls.doorQuantity"
+              type="number"
+              class="form-control form-control-lg rounded-3 shadow-sm"
+              placeholder="Ex: 1"
+              min="1"
+            />
+          </div>
+        </div>
       </section>
 
+      <!-- 8. Windows -->
       <!-- 8. Windows -->
       <section class="input-block mb-4 pb-4 border-bottom">
         <h3 class="input-block-title h6 fw-bold mb-1">8. Windows</h3>
         <p class="text-muted small mb-3">Will the windows be changed or retained?</p>
 
-        <div class="image-option-grid two">
+        <div class="image-option-grid two mb-4">
           <div
             v-for="option in windowOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="store.walls.windows = option.value"
+            @click="
+              store.walls.windows = option.value;
+              if (option.value === 'Retained') store.walls.windowQuantity = null;
+              if (option.value === 'Changed')
+                store.walls.windowQuantity = store.walls.windowQuantity || 1;
+            "
           >
             <StyleCard
               compact
@@ -185,19 +233,36 @@
             />
           </div>
         </div>
+
+        <div v-if="store.walls.windows === 'Changed'" class="row">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">Window Quantity</label>
+            <input
+              v-model.number="store.walls.windowQuantity"
+              type="number"
+              class="form-control form-control-lg rounded-3 shadow-sm"
+              placeholder="Ex: 2"
+              min="1"
+            />
+          </div>
+        </div>
       </section>
 
+      <!-- 9. Cladding -->
       <!-- 9. Cladding -->
       <section class="input-block">
         <h3 class="input-block-title h6 fw-bold mb-1">9. Cladding</h3>
         <p class="text-muted small mb-3">Does the room require wall cladding?</p>
 
-        <div class="option-grid two">
+        <div class="option-grid two mb-4">
           <button
             type="button"
             class="choice-card"
             :class="{ selected: store.walls.hasCladding === true }"
-            @click="store.walls.hasCladding = true"
+            @click="
+              store.walls.hasCladding = true;
+              store.walls.claddingArea = store.walls.claddingArea || 1;
+            "
           >
             <span class="choice-icon">✓</span>
             <strong>Yes</strong>
@@ -208,12 +273,35 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.walls.hasCladding === false }"
-            @click="store.walls.hasCladding = false"
+            @click="
+              store.walls.hasCladding = false;
+              store.walls.claddingArea = null;
+            "
           >
             <span class="choice-icon">×</span>
             <strong>No</strong>
             <small>No wall cladding</small>
           </button>
+        </div>
+
+        <div v-if="store.walls.hasCladding === true" class="row">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2">Cladding Area</label>
+            <div
+              class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
+            >
+              <input
+                v-model.number="store.walls.claddingArea"
+                type="number"
+                class="form-control border-0 px-3"
+                placeholder="Ex: 80"
+                min="1"
+              />
+              <span class="input-group-text bg-white border-0 text-muted fw-bold pe-4">
+                sq ft
+              </span>
+            </div>
+          </div>
         </div>
       </section>
     </div>

@@ -160,7 +160,10 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.ceiling.hasChandelier === true }"
-            @click="store.ceiling.hasChandelier = true"
+            @click="
+              store.ceiling.hasChandelier = true;
+              store.ceiling.chandelierQuantity = store.ceiling.chandelierQuantity || 1;
+            "
           >
             <span class="choice-icon">✓</span>
             <strong>Yes</strong>
@@ -171,12 +174,29 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.ceiling.hasChandelier === false }"
-            @click="store.ceiling.hasChandelier = false"
+            @click="
+              store.ceiling.hasChandelier = false;
+              store.ceiling.chandelierQuantity = null;
+            "
           >
             <span class="choice-icon">×</span>
             <strong>No</strong>
             <small>No chandelier required</small>
           </button>
+        </div>
+
+        <div v-if="store.ceiling.hasChandelier === true" class="row">
+          <div class="col-12 col-md-9 col-lg-7">
+            <label class="form-label small fw-bold text-muted mb-2"> Chandelier Quantity </label>
+
+            <input
+              v-model.number="store.ceiling.chandelierQuantity"
+              type="number"
+              class="form-control form-control-lg rounded-3 shadow-sm"
+              placeholder="Ex: 1"
+              min="1"
+            />
+          </div>
         </div>
       </section>
 
@@ -201,7 +221,10 @@
             type="button"
             class="choice-card"
             :class="{ selected: store.ceiling.hasCurtainBox === false }"
-            @click="store.ceiling.hasCurtainBox = false"
+            @click="
+              store.ceiling.hasCurtainBox = false;
+              store.ceiling.curtainBoxLength = null;
+            "
           >
             <span class="choice-icon">×</span>
             <strong>No</strong>
