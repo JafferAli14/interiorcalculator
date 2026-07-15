@@ -128,14 +128,14 @@
             v-for="option in wallPaintingOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="store.walls.wallPainting = option.value"
+            @click="store.walls.wallPaintingChoice = option.value"
           >
             <StyleCard
               compact
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.wallPainting === option.value"
+              :is-selected="store.walls.wallPaintingChoice === option.value"
             />
           </div>
         </div>
@@ -151,14 +151,14 @@
             v-for="option in wallpaperOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="store.walls.wallpaper = option.value"
+            @click="store.walls.wallpaperChoice = option.value"
           >
             <StyleCard
               compact
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.wallpaper === option.value"
+              :is-selected="store.walls.wallpaperChoice === option.value"
             />
           </div>
         </div>
@@ -176,7 +176,7 @@
             :key="option.value"
             class="image-option-cell"
             @click="
-              store.walls.doors = option.value;
+              store.walls.doorsChoice = option.value;
               if (option.value === 'Retained') store.walls.doorQuantity = null;
               if (option.value === 'Changed')
                 store.walls.doorQuantity = store.walls.doorQuantity || 1;
@@ -187,12 +187,12 @@
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.doors === option.value"
+              :is-selected="store.walls.doorsChoice === option.value"
             />
           </div>
         </div>
 
-        <div v-if="store.walls.doors === 'Changed'" class="row">
+        <div v-if="store.walls.doorsChoice === 'Changed'" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Door Quantity</label>
             <input
@@ -218,7 +218,7 @@
             :key="option.value"
             class="image-option-cell"
             @click="
-              store.walls.windows = option.value;
+              store.walls.windowsChoice = option.value;
               if (option.value === 'Retained') store.walls.windowQuantity = null;
               if (option.value === 'Changed')
                 store.walls.windowQuantity = store.walls.windowQuantity || 1;
@@ -229,12 +229,12 @@
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.windows === option.value"
+              :is-selected="store.walls.windowsChoice === option.value"
             />
           </div>
         </div>
 
-        <div v-if="store.walls.windows === 'Changed'" class="row">
+        <div v-if="store.walls.windowsChoice === 'Changed'" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Window Quantity</label>
             <input

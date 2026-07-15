@@ -5,7 +5,7 @@
   </div>
 </template>
 
-<script setup>
-import { usePlannerStore } from '@/stores/planner'
+<script setup lang="ts">
+import { usePlannerStore } from '@/stores/Planner'
 const store = usePlannerStore()
 </script>

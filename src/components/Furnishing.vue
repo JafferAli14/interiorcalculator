@@ -34,7 +34,7 @@
         <h3 class="input-block-title h6 fw-bold mb-1">2. Bed Setup</h3>
         <p class="text-muted small mb-3">Select required bed additions.</p>
 
-        <div class="image-option-grid three">
+        <div class="image-option-grid two">
           <div
             class="image-option-cell"
             @click="store.furnishing.hasHeadboard = !store.furnishing.hasHeadboard"
@@ -64,19 +64,6 @@
               description="Tap to select/deselect"
               :image="bedsideCladdingImg"
               :is-selected="store.furnishing.hasBedsideCladding"
-            />
-          </div>
-
-          <div
-            class="image-option-cell"
-            @click="store.furnishing.hasDuvet = !store.furnishing.hasDuvet"
-          >
-            <StyleCard
-              compact
-              name="Duvet"
-              description="Tap to select/deselect"
-              :image="duvetImg"
-              :is-selected="store.furnishing.hasDuvet"
             />
           </div>
         </div>
@@ -215,10 +202,10 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.furnishing.chairs.exists === true }"
+            :class="{ selected: store.furnishing.chairsLegacy.exists === true }"
             @click="
-              store.furnishing.chairs.exists = true;
-              store.furnishing.chairs.count = store.furnishing.chairs.count || 1;
+              store.furnishing.chairsLegacy.exists = true;
+              store.furnishing.chairsLegacy.count = store.furnishing.chairsLegacy.count || 1;
             "
           >
             <span class="choice-icon">✓</span>
@@ -229,10 +216,10 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.furnishing.chairs.exists === false }"
+            :class="{ selected: store.furnishing.chairsLegacy.exists === false }"
             @click="
-              store.furnishing.chairs.exists = false;
-              store.furnishing.chairs.count = 0;
+              store.furnishing.chairsLegacy.exists = false;
+              store.furnishing.chairsLegacy.count = 0;
             "
           >
             <span class="choice-icon">×</span>
@@ -241,11 +228,11 @@
           </button>
         </div>
 
-        <div v-if="store.furnishing.chairs.exists" class="row">
+        <div v-if="store.furnishing.chairsLegacy.exists" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Number of Chairs</label>
             <input
-              v-model.number="store.furnishing.chairs.count"
+              v-model.number="store.furnishing.chairsLegacy.count"
               type="number"
               class="form-control form-control-lg rounded-3 shadow-sm"
               placeholder="Ex: 2"
@@ -264,10 +251,10 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.furnishing.stools.exists === true }"
+            :class="{ selected: store.furnishing.stoolsLegacy.exists === true }"
             @click="
-              store.furnishing.stools.exists = true;
-              store.furnishing.stools.count = store.furnishing.stools.count || 1;
+              store.furnishing.stoolsLegacy.exists = true;
+              store.furnishing.stoolsLegacy.count = store.furnishing.stoolsLegacy.count || 1;
             "
           >
             <span class="choice-icon">✓</span>
@@ -278,10 +265,10 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.furnishing.stools.exists === false }"
+            :class="{ selected: store.furnishing.stoolsLegacy.exists === false }"
             @click="
-              store.furnishing.stools.exists = false;
-              store.furnishing.stools.count = 0;
+              store.furnishing.stoolsLegacy.exists = false;
+              store.furnishing.stoolsLegacy.count = 0;
             "
           >
             <span class="choice-icon">×</span>
@@ -290,11 +277,11 @@
           </button>
         </div>
 
-        <div v-if="store.furnishing.stools.exists" class="row">
+        <div v-if="store.furnishing.stoolsLegacy.exists" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Number of Stools</label>
             <input
-              v-model.number="store.furnishing.stools.count"
+              v-model.number="store.furnishing.stoolsLegacy.count"
               type="number"
               class="form-control form-control-lg rounded-3 shadow-sm"
               placeholder="Ex: 2"
@@ -468,7 +455,6 @@ import queenBedImg from '@/assets/Furnishing/queen-bed.png'
 import StyleCard from '@/components/StyleCard.vue'
 import headboardImg from '@/assets/Furnishing/headboard.png'
 import bedsideCladdingImg from '@/assets/Furnishing/bedside-cladding.png'
-import duvetImg from '@/assets/Furnishing/duvet.png'
 import sideTableImg from '@/assets/Furnishing/side-table.png'
 import tvUnitImg from '@/assets/Furnishing/tv-unit.png'
 import splitAcImg from '@/assets/Furnishing/split-ac.png'

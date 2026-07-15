@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import StyleCard from '@/components/StyleCard.vue'
-import { usePlannerStore } from '@/stores/planner'
+import { usePlannerStore } from '@/stores/Planner'
 // Importing images from assets
 import modernImg from '@/assets/modern.png'
 import classicImg from '@/assets/classic.png'

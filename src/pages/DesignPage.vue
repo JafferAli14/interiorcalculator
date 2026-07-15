@@ -108,21 +108,60 @@ const isStepValid = computed(() => {
 
   if (store.currentStep === 2) {
     const c = store.ceiling
+    const m = store.measurements
+    const validGypsumCodes = ['CEILING_LEVEL_1', 'CEILING_LEVEL_2']
+    const validCornishCodes = ['CORNISH_5CM', 'CORNISH_10CM']
+    const validLightCodes = ['LIGHT_TRACK', 'LIGHT_SPOT', 'LIGHT_HIDDEN', 'LIGHT_STRIP']
+    const lightsAreValid =
+      c.ceilingLights.length > 0 &&
+      c.ceilingLights.every(
+        (light) =>
+          light.enabled &&
+          light.priceItemCode !== null &&
+          validLightCodes.includes(light.priceItemCode) &&
+          light.quantity !== null &&
+          light.quantity > 0,
+      )
+
+    const chandelierIsValid =
+      c.chandelierAnswered &&
+      (!c.chandelier.enabled ||
+        (c.chandelier.priceItemCode === 'CHANDELIER' &&
+          ((c.chandelier.pricingMode === 'Calculated' &&
+            c.chandelier.quantity !== null &&
+            c.chandelier.quantity > 0) ||
+            (c.chandelier.pricingMode === 'Custom' &&
+              c.chandelier.customPrice !== null &&
+              c.chandelier.customPrice > 0))))
+
+    const curtainBoxIsValid =
+      c.curtainBoxAnswered &&
+      (!c.curtainBox.enabled ||
+        (c.curtainBox.priceItemCode === 'CURTAIN_BOX' &&
+          c.curtainBox.length !== null &&
+          c.curtainBox.length > 0))
+
+    const ceilingPaintingIsValid =
+      c.ceilingPaintingAnswered &&
+      c.ceilingPainting.enabled &&
+      c.ceilingPainting.priceItemCode === 'CEILING_PAINTING' &&
+      !!c.ceilingPainting.paintColour?.trim()
 
     return (
-      c.level !== null &&
-      c.manualArea !== null &&
-      c.manualArea > 0 &&
-      c.cornishSize !== null &&
-      c.cornishLength !== null &&
-      c.cornishLength > 0 &&
-      c.lightingType !== '' &&
-      c.lightsCount !== null &&
-      c.lightsCount > 0 &&
-      c.hasChandelier !== null &&
-      (c.hasChandelier === false || (c.chandelierQuantity !== null && c.chandelierQuantity > 0)) &&
-      c.hasCurtainBox !== null &&
-      (c.hasCurtainBox === false || (c.curtainBoxLength !== null && c.curtainBoxLength > 0))
+      m.ceilingArea !== null &&
+      m.ceilingArea > 0 &&
+      c.gypsumCeiling.enabled &&
+      c.gypsumCeiling.priceItemCode !== null &&
+      validGypsumCodes.includes(c.gypsumCeiling.priceItemCode) &&
+      c.cornish.enabled &&
+      c.cornish.priceItemCode !== null &&
+      validCornishCodes.includes(c.cornish.priceItemCode) &&
+      c.cornish.length !== null &&
+      c.cornish.length > 0 &&
+      lightsAreValid &&
+      chandelierIsValid &&
+      curtainBoxIsValid &&
+      ceilingPaintingIsValid
     )
   }
 
@@ -137,12 +176,12 @@ const isStepValid = computed(() => {
       w.manualArea > 0 &&
       w.mouldingLength !== null &&
       w.mouldingLength > 0 &&
-      w.wallPainting !== '' &&
-      w.wallpaper !== '' &&
-      w.doors !== '' &&
-      (w.doors === 'Retained' || (w.doorQuantity !== null && w.doorQuantity > 0)) &&
-      w.windows !== '' &&
-      (w.windows === 'Retained' || (w.windowQuantity !== null && w.windowQuantity > 0)) &&
+      w.wallPaintingChoice !== '' &&
+      w.wallpaperChoice !== '' &&
+      w.doorsChoice !== '' &&
+      (w.doorsChoice === 'Retained' || (w.doorQuantity !== null && w.doorQuantity > 0)) &&
+      w.windowsChoice !== '' &&
+      (w.windowsChoice === 'Retained' || (w.windowQuantity !== null && w.windowQuantity > 0)) &&
       w.hasCladding !== null &&
       (w.hasCladding === false || (w.claddingArea !== null && w.claddingArea > 0))
     )
@@ -180,10 +219,10 @@ const isStepValid = computed(() => {
       (furn.hasSideLamps === false ||
         (furn.sideLampQuantity !== null && furn.sideLampQuantity > 0)) &&
       furn.tvUnitChoice !== '' &&
-      furn.chairs.exists !== null &&
-      (furn.chairs.exists === false || furn.chairs.count > 0) &&
-      furn.stools.exists !== null &&
-      (furn.stools.exists === false || furn.stools.count > 0) &&
+      furn.chairsLegacy.exists !== null &&
+      (furn.chairsLegacy.exists === false || furn.chairsLegacy.count > 0) &&
+      furn.stoolsLegacy.exists !== null &&
+      (furn.stoolsLegacy.exists === false || furn.stoolsLegacy.count > 0) &&
       furn.hasDressingTable !== null &&
       furn.hasCarpet !== null &&
       (furn.hasCarpet === false || (furn.carpetArea !== null && furn.carpetArea > 0)) &&
