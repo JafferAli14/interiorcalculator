@@ -7,7 +7,6 @@
 
     <div class="inputs-stack">
       <!-- 1. Curtains -->
-      <!-- 1. Curtains -->
       <section class="input-block mb-4 pb-4 border-bottom">
         <h3 class="input-block-title h6 fw-bold mb-1">1. Curtains</h3>
         <p class="text-muted small mb-3">
@@ -19,14 +18,14 @@
             v-for="option in curtainOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="store.walls.curtainChoice = option.value"
+            @click="selectCurtain(option.value)"
           >
             <StyleCard
               compact
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.curtainChoice === option.value"
+              :is-selected="store.walls.curtain.priceItemCode === option.value"
             />
           </div>
         </div>
@@ -38,7 +37,7 @@
               class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
             >
               <input
-                v-model.number="store.walls.curtainLength"
+                v-model.number="store.walls.curtain.length"
                 type="number"
                 class="form-control border-0 px-3"
                 placeholder="Ex: 12"
@@ -64,7 +63,7 @@
               class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
             >
               <input
-                v-model.number="store.walls.manualArea"
+                v-model.number="store.measurements.wallArea"
                 type="number"
                 class="form-control border-0 px-3"
                 placeholder="Ex: 600"
@@ -90,7 +89,8 @@
               class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
             >
               <input
-                v-model.number="store.walls.mouldingLength"
+                v-model.number="store.walls.moulding.length"
+                @input="syncMoulding"
                 type="number"
                 class="form-control border-0 px-3"
                 placeholder="Ex: 45"
@@ -104,46 +104,79 @@
         </div>
       </section>
 
-      <!-- 4. Ceiling Painting -->
+      <!-- 4. Wall Painting -->
       <section class="input-block mb-4 pb-4 border-bottom">
-        <h3 class="input-block-title h6 fw-bold mb-1">4. Ceiling Painting</h3>
-        <p class="text-muted small mb-3">Ceiling painting is fixed as white.</p>
-
-        <div class="fixed-card">
-          <span class="choice-icon">✓</span>
-          <div>
-            <strong>White Ceiling Paint</strong>
-            <small>Default ceiling paint option</small>
-          </div>
-        </div>
-      </section>
-
-      <!-- 5. Wall Painting -->
-      <section class="input-block mb-4 pb-4 border-bottom">
-        <h3 class="input-block-title h6 fw-bold mb-1">5. Wall Painting</h3>
+        <h3 class="input-block-title h6 fw-bold mb-1">4. Wall Painting</h3>
         <p class="text-muted small mb-3">Choose the wall painting option.</p>
 
-        <div class="image-option-grid two">
+        <div class="image-option-grid two mb-4">
           <div
             v-for="option in wallPaintingOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="store.walls.wallPaintingChoice = option.value"
+            @click="selectWallPainting(option.value)"
           >
             <StyleCard
               compact
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.wallPaintingChoice === option.value"
+              :is-selected="store.walls.wallPainting.priceItemCode === option.value"
+            />
+          </div>
+        </div>
+
+        <div class="option-grid two mb-4">
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.walls.wallPainting.pricingMode === 'Calculated' }"
+            @click="setWallPaintingMode('Calculated')"
+          >
+            <span class="choice-icon">=</span>
+            <strong>Calculated</strong>
+            <small>Use wall area and selected paint rate</small>
+          </button>
+
+          <button
+            type="button"
+            class="choice-card"
+            :class="{ selected: store.walls.wallPainting.pricingMode === 'Custom' }"
+            @click="setWallPaintingMode('Custom')"
+          >
+            <span class="choice-icon">Q</span>
+            <strong>Custom</strong>
+            <small>Enter manual wall-painting price</small>
+          </button>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label small fw-bold text-muted mb-2">Paint Colour</label>
+            <input
+              v-model.trim="store.walls.wallPainting.paintColour"
+              type="text"
+              class="form-control form-control-lg rounded-3 shadow-sm"
+              placeholder="Ex: Ivory"
+            />
+          </div>
+
+          <div v-if="store.walls.wallPainting.pricingMode === 'Custom'" class="col-12 col-md-6">
+            <label class="form-label small fw-bold text-muted mb-2">Custom Price (QAR)</label>
+            <input
+              v-model.number="store.walls.wallPainting.customPrice"
+              type="number"
+              class="form-control form-control-lg rounded-3 shadow-sm"
+              placeholder="Ex: 18000"
+              min="1"
             />
           </div>
         </div>
       </section>
 
-      <!-- 6. Wallpaper -->
+      <!-- 5. Wallpaper -->
       <section class="input-block">
-        <h3 class="input-block-title h6 fw-bold mb-1">6. Wallpaper</h3>
+        <h3 class="input-block-title h6 fw-bold mb-1">5. Wallpaper</h3>
         <p class="text-muted small mb-3">Choose the wallpaper option.</p>
 
         <div class="image-option-grid two">
@@ -151,23 +184,22 @@
             v-for="option in wallpaperOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="store.walls.wallpaperChoice = option.value"
+            @click="selectWallpaper(option.value)"
           >
             <StyleCard
               compact
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.wallpaperChoice === option.value"
+              :is-selected="store.walls.wallpaper.priceItemCode === option.value"
             />
           </div>
         </div>
       </section>
 
-      <!-- 7. Doors -->
-      <!-- 7. Doors -->
+      <!-- 6. Doors -->
       <section class="input-block mt-4 mb-4 pb-4 border-bottom">
-        <h3 class="input-block-title h6 fw-bold mb-1">7. Doors</h3>
+        <h3 class="input-block-title h6 fw-bold mb-1">6. Doors</h3>
         <p class="text-muted small mb-3">Will the doors be changed or retained?</p>
 
         <div class="image-option-grid two mb-4">
@@ -175,28 +207,23 @@
             v-for="option in doorOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="
-              store.walls.doorsChoice = option.value;
-              if (option.value === 'Retained') store.walls.doorQuantity = null;
-              if (option.value === 'Changed')
-                store.walls.doorQuantity = store.walls.doorQuantity || 1;
-            "
+            @click="selectDoors(option.value)"
           >
             <StyleCard
               compact
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.doorsChoice === option.value"
+              :is-selected="doorSelection === option.value"
             />
           </div>
         </div>
 
-        <div v-if="store.walls.doorsChoice === 'Changed'" class="row">
+        <div v-if="store.walls.doors.enabled" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Door Quantity</label>
             <input
-              v-model.number="store.walls.doorQuantity"
+              v-model.number="store.walls.doors.quantity"
               type="number"
               class="form-control form-control-lg rounded-3 shadow-sm"
               placeholder="Ex: 1"
@@ -206,10 +233,9 @@
         </div>
       </section>
 
-      <!-- 8. Windows -->
-      <!-- 8. Windows -->
+      <!-- 7. Windows -->
       <section class="input-block mb-4 pb-4 border-bottom">
-        <h3 class="input-block-title h6 fw-bold mb-1">8. Windows</h3>
+        <h3 class="input-block-title h6 fw-bold mb-1">7. Windows</h3>
         <p class="text-muted small mb-3">Will the windows be changed or retained?</p>
 
         <div class="image-option-grid two mb-4">
@@ -217,28 +243,23 @@
             v-for="option in windowOptions"
             :key="option.value"
             class="image-option-cell"
-            @click="
-              store.walls.windowsChoice = option.value;
-              if (option.value === 'Retained') store.walls.windowQuantity = null;
-              if (option.value === 'Changed')
-                store.walls.windowQuantity = store.walls.windowQuantity || 1;
-            "
+            @click="selectWindows(option.value)"
           >
             <StyleCard
               compact
               :name="option.name"
               :description="option.description"
               :image="option.image"
-              :is-selected="store.walls.windowsChoice === option.value"
+              :is-selected="windowSelection === option.value"
             />
           </div>
         </div>
 
-        <div v-if="store.walls.windowsChoice === 'Changed'" class="row">
+        <div v-if="store.walls.windows.enabled" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Window Quantity</label>
             <input
-              v-model.number="store.walls.windowQuantity"
+              v-model.number="store.walls.windows.quantity"
               type="number"
               class="form-control form-control-lg rounded-3 shadow-sm"
               placeholder="Ex: 2"
@@ -248,23 +269,19 @@
         </div>
       </section>
 
-      <!-- 9. Cladding -->
-      <!-- 9. Cladding -->
+      <!-- 8. Cladding -->
       <section class="input-block">
-        <h3 class="input-block-title h6 fw-bold mb-1">9. Cladding</h3>
+        <h3 class="input-block-title h6 fw-bold mb-1">8. Cladding</h3>
         <p class="text-muted small mb-3">Does the room require wall cladding?</p>
 
         <div class="option-grid two mb-4">
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.walls.hasCladding === true }"
-            @click="
-              store.walls.hasCladding = true;
-              store.walls.claddingArea = store.walls.claddingArea || 1;
-            "
+            :class="{ selected: store.walls.cladding.enabled }"
+            @click="selectCladding(true)"
           >
-            <span class="choice-icon">✓</span>
+            <span class="choice-icon">Y</span>
             <strong>Yes</strong>
             <small>Add wall cladding</small>
           </button>
@@ -272,26 +289,23 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.walls.hasCladding === false }"
-            @click="
-              store.walls.hasCladding = false;
-              store.walls.claddingArea = null;
-            "
+            :class="{ selected: store.walls.claddingAnswered && !store.walls.cladding.enabled }"
+            @click="selectCladding(false)"
           >
-            <span class="choice-icon">×</span>
+            <span class="choice-icon">N</span>
             <strong>No</strong>
             <small>No wall cladding</small>
           </button>
         </div>
 
-        <div v-if="store.walls.hasCladding === true" class="row">
+        <div v-if="store.walls.cladding.enabled" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Cladding Area</label>
             <div
               class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
             >
               <input
-                v-model.number="store.walls.claddingArea"
+                v-model.number="store.walls.cladding.area"
                 type="number"
                 class="form-control border-0 px-3"
                 placeholder="Ex: 80"
@@ -309,6 +323,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import curtains1Img from '@/assets/walls/curtains1.png'
 import curtains2Img from '@/assets/walls/curtains2.png'
 import wallPainting1Img from '@/assets/walls/wallpainting1.png'
@@ -321,18 +336,19 @@ import doorsRetainedImg from '@/assets/walls/doors-retained.png'
 import windowsChangedImg from '@/assets/walls/windows-changed.png'
 import windowsRetainedImg from '@/assets/walls/windows-retained.png'
 import { usePlannerStore } from '@/stores/Planner'
+import type { PricingMode } from '@/types/bedroomPlanner'
 
 const store = usePlannerStore()
 
 const curtainOptions = [
   {
-    value: 'Choice 1' as const,
+    value: 'CURTAIN_CHOICE_1' as const,
     name: 'Choice 1',
     description: 'Standard curtain option',
     image: curtains1Img,
   },
   {
-    value: 'Choice 2' as const,
+    value: 'CURTAIN_CHOICE_2' as const,
     name: 'Choice 2',
     description: 'Premium curtain option',
     image: curtains2Img,
@@ -341,13 +357,13 @@ const curtainOptions = [
 
 const wallPaintingOptions = [
   {
-    value: 'Choice 1' as const,
+    value: 'WALL_PAINT_CHOICE_1' as const,
     name: 'Choice 1',
     description: 'Standard wall paint',
     image: wallPainting1Img,
   },
   {
-    value: 'Choice 2' as const,
+    value: 'WALL_PAINT_CHOICE_2' as const,
     name: 'Choice 2',
     description: 'Premium wall paint',
     image: wallPainting2Img,
@@ -356,13 +372,13 @@ const wallPaintingOptions = [
 
 const wallpaperOptions = [
   {
-    value: 'Choice 1' as const,
+    value: 'WALLPAPER_CHOICE_1' as const,
     name: 'Choice 1',
     description: 'Standard wallpaper',
     image: wallpaper1Img,
   },
   {
-    value: 'Choice 2' as const,
+    value: 'WALLPAPER_CHOICE_2' as const,
     name: 'Choice 2',
     description: 'Premium wallpaper',
     image: wallpaper2Img,
@@ -398,6 +414,78 @@ const windowOptions = [
     image: windowsRetainedImg,
   },
 ]
+
+const doorSelection = computed(() =>
+  store.walls.doorsAnswered ? (store.walls.doors.enabled ? 'Changed' : 'Retained') : '',
+)
+const windowSelection = computed(() =>
+  store.walls.windowsAnswered ? (store.walls.windows.enabled ? 'Changed' : 'Retained') : '',
+)
+
+function selectCurtain(code: 'CURTAIN_CHOICE_1' | 'CURTAIN_CHOICE_2') {
+  store.walls.curtain.enabled = true
+  store.walls.curtain.priceItemCode = code
+}
+
+function syncMoulding() {
+  const length = store.walls.moulding.length
+  store.walls.moulding.enabled = typeof length === 'number' && length > 0
+  store.walls.moulding.priceItemCode = store.walls.moulding.enabled ? 'WALL_MOULDING' : null
+}
+
+function selectWallPainting(code: 'WALL_PAINT_CHOICE_1' | 'WALL_PAINT_CHOICE_2') {
+  store.walls.wallPainting.enabled = true
+  store.walls.wallPainting.priceItemCode = code
+  store.walls.wallPainting.pricingMode = store.walls.wallPainting.pricingMode ?? 'Calculated'
+}
+
+function setWallPaintingMode(mode: PricingMode) {
+  store.walls.wallPainting.enabled = true
+  store.walls.wallPainting.pricingMode = mode
+  if (mode === 'Calculated') {
+    store.walls.wallPainting.customPrice = null
+  }
+}
+
+function selectWallpaper(code: 'WALLPAPER_CHOICE_1' | 'WALLPAPER_CHOICE_2') {
+  store.walls.wallpaper.enabled = true
+  store.walls.wallpaper.priceItemCode = code
+}
+
+function selectDoors(value: 'Changed' | 'Retained') {
+  store.walls.doorsAnswered = true
+  if (value === 'Changed') {
+    store.walls.doors.enabled = true
+    store.walls.doors.priceItemCode = 'DOOR_CHANGED'
+    store.walls.doors.quantity = store.walls.doors.quantity || 1
+    return
+  }
+
+  store.walls.doors.enabled = false
+  store.walls.doors.priceItemCode = null
+  store.walls.doors.quantity = null
+}
+
+function selectWindows(value: 'Changed' | 'Retained') {
+  store.walls.windowsAnswered = true
+  if (value === 'Changed') {
+    store.walls.windows.enabled = true
+    store.walls.windows.priceItemCode = 'WINDOW_CHANGED'
+    store.walls.windows.quantity = store.walls.windows.quantity || 1
+    return
+  }
+
+  store.walls.windows.enabled = false
+  store.walls.windows.priceItemCode = null
+  store.walls.windows.quantity = null
+}
+
+function selectCladding(enabled: boolean) {
+  store.walls.claddingAnswered = true
+  store.walls.cladding.enabled = enabled
+  store.walls.cladding.priceItemCode = enabled ? 'WALL_CLADDING' : null
+  store.walls.cladding.area = enabled ? store.walls.cladding.area || 1 : null
+}
 </script>
 
 <style scoped>

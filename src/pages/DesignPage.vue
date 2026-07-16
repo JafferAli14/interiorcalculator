@@ -167,23 +167,78 @@ const isStepValid = computed(() => {
 
   if (store.currentStep === 3) {
     const w = store.walls
+    const m = store.measurements
+    const validCurtainCodes = ['CURTAIN_CHOICE_1', 'CURTAIN_CHOICE_2']
+    const validWallPaintCodes = ['WALL_PAINT_CHOICE_1', 'WALL_PAINT_CHOICE_2']
+    const validWallpaperCodes = ['WALLPAPER_CHOICE_1', 'WALLPAPER_CHOICE_2']
+
+    const curtainIsValid =
+      w.curtain.enabled &&
+      w.curtain.priceItemCode !== null &&
+      validCurtainCodes.includes(w.curtain.priceItemCode) &&
+      w.curtain.length !== null &&
+      w.curtain.length > 0
+
+    const mouldingIsValid =
+      w.moulding.enabled &&
+      w.moulding.priceItemCode === 'WALL_MOULDING' &&
+      w.moulding.length !== null &&
+      w.moulding.length > 0
+
+    const wallPaintingIsCalculated = w.wallPainting.pricingMode === 'Calculated'
+    const wallPaintingNeedsWallArea = w.wallPainting.enabled && wallPaintingIsCalculated
+    const wallpaperNeedsWallArea = w.wallpaper.enabled
+    const wallAreaIsValid = m.wallArea !== null && m.wallArea > 0
+
+    const wallPaintingIsValid =
+      w.wallPainting.enabled &&
+      w.wallPainting.priceItemCode !== null &&
+      validWallPaintCodes.includes(w.wallPainting.priceItemCode) &&
+      !!w.wallPainting.paintColour?.trim() &&
+      ((wallPaintingIsCalculated && wallAreaIsValid) ||
+        (w.wallPainting.pricingMode === 'Custom' &&
+          w.wallPainting.customPrice !== null &&
+          w.wallPainting.customPrice > 0))
+
+    const wallpaperIsValid =
+      !w.wallpaper.enabled ||
+      (w.wallpaper.priceItemCode !== null &&
+        validWallpaperCodes.includes(w.wallpaper.priceItemCode) &&
+        wallAreaIsValid)
+
+    const doorsAreValid =
+      w.doorsAnswered &&
+      (!w.doors.enabled ||
+        (w.doors.priceItemCode === 'DOOR_CHANGED' &&
+          w.doors.quantity !== null &&
+          w.doors.quantity > 0))
+
+    const windowsAreValid =
+      w.windowsAnswered &&
+      (!w.windows.enabled ||
+        (w.windows.priceItemCode === 'WINDOW_CHANGED' &&
+          w.windows.quantity !== null &&
+          w.windows.quantity > 0))
+
+    const claddingIsValid =
+      w.claddingAnswered &&
+      (!w.cladding.enabled ||
+        (w.cladding.priceItemCode === 'WALL_CLADDING' &&
+          w.cladding.area !== null &&
+          w.cladding.area > 0))
+
+    const canonicalWallAreaIsValid =
+      !(wallPaintingNeedsWallArea || wallpaperNeedsWallArea) || wallAreaIsValid
 
     return (
-      w.curtainChoice !== '' &&
-      w.curtainLength !== null &&
-      w.curtainLength > 0 &&
-      w.manualArea !== null &&
-      w.manualArea > 0 &&
-      w.mouldingLength !== null &&
-      w.mouldingLength > 0 &&
-      w.wallPaintingChoice !== '' &&
-      w.wallpaperChoice !== '' &&
-      w.doorsChoice !== '' &&
-      (w.doorsChoice === 'Retained' || (w.doorQuantity !== null && w.doorQuantity > 0)) &&
-      w.windowsChoice !== '' &&
-      (w.windowsChoice === 'Retained' || (w.windowQuantity !== null && w.windowQuantity > 0)) &&
-      w.hasCladding !== null &&
-      (w.hasCladding === false || (w.claddingArea !== null && w.claddingArea > 0))
+      curtainIsValid &&
+      mouldingIsValid &&
+      wallPaintingIsValid &&
+      wallpaperIsValid &&
+      doorsAreValid &&
+      windowsAreValid &&
+      claddingIsValid &&
+      canonicalWallAreaIsValid
     )
   }
 

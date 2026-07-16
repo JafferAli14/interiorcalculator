@@ -333,6 +333,9 @@ function createInitialState() {
       doors: quantityItem(),
       windows: quantityItem(),
       cladding: areaItem(),
+      doorsAnswered: false,
+      windowsAnswered: false,
+      claddingAnswered: false,
 
       // Temporary compatibility fields used by the current Walls.vue.
       curtainChoice: '' as WallChoice,
@@ -514,7 +517,7 @@ export const usePlannerStore = defineStore('planner', {
 
     buildPreviewPayload(): BedroomPlannerRequest {
       const ceilingArea = positiveOrNull(this.measurements.ceilingArea)
-      const wallArea = positiveOrNull(this.measurements.wallArea) ?? positiveOrNull(this.walls.manualArea)
+      const wallArea = positiveOrNull(this.measurements.wallArea)
       const flooringArea =
         positiveOrNull(this.measurements.flooringArea) ?? positiveOrNull(this.flooring.manualArea)
 
@@ -571,54 +574,16 @@ export const usePlannerStore = defineStore('planner', {
           },
         },
         walls: {
-          curtain: cleanLength({
-            enabled: this.walls.curtain.enabled || this.walls.curtainChoice !== '',
-            priceItemCode:
-              this.walls.curtain.priceItemCode ??
-              (this.walls.curtainChoice ? `CURTAIN_${this.walls.curtainChoice.replace(' ', '_')}` : null),
-            length: this.walls.curtain.length ?? this.walls.curtainLength,
-          }),
-          moulding: cleanLength({
-            enabled: this.walls.moulding.enabled || positiveOrNull(this.walls.mouldingLength) !== null,
-            priceItemCode: this.walls.moulding.priceItemCode ?? 'WALL_MOULDING',
-            length: this.walls.moulding.length ?? this.walls.mouldingLength,
-          }),
+          curtain: cleanLength(this.walls.curtain),
+          moulding: cleanLength(this.walls.moulding),
           wallPainting: {
-            ...cleanCustomFixed({
-              enabled: this.walls.wallPainting.enabled || this.walls.wallPaintingChoice !== '',
-              priceItemCode:
-                this.walls.wallPainting.priceItemCode ??
-                (this.walls.wallPaintingChoice
-                  ? `WALL_PAINTING_${this.walls.wallPaintingChoice.replace(' ', '_')}`
-                  : null),
-              pricingMode:
-                this.walls.wallPainting.pricingMode ??
-                (this.walls.wallPaintingChoice ? 'Calculated' : null),
-              customPrice: this.walls.wallPainting.customPrice,
-            }),
+            ...cleanCustomFixed(this.walls.wallPainting),
             paintColour: cleanString(this.walls.wallPainting.paintColour),
           },
-          wallpaper: cleanFixed({
-            enabled: this.walls.wallpaper.enabled || this.walls.wallpaperChoice !== '',
-            priceItemCode:
-              this.walls.wallpaper.priceItemCode ??
-              (this.walls.wallpaperChoice ? `WALLPAPER_${this.walls.wallpaperChoice.replace(' ', '_')}` : null),
-          }),
-          doors: cleanQuantity({
-            enabled: this.walls.doors.enabled || this.walls.doorsChoice === 'Changed',
-            priceItemCode: this.walls.doors.priceItemCode ?? 'DOORS',
-            quantity: this.walls.doors.quantity ?? this.walls.doorQuantity,
-          }),
-          windows: cleanQuantity({
-            enabled: this.walls.windows.enabled || this.walls.windowsChoice === 'Changed',
-            priceItemCode: this.walls.windows.priceItemCode ?? 'WINDOWS',
-            quantity: this.walls.windows.quantity ?? this.walls.windowQuantity,
-          }),
-          cladding: cleanArea({
-            enabled: this.walls.cladding.enabled || this.walls.hasCladding === true,
-            priceItemCode: this.walls.cladding.priceItemCode ?? 'WALL_CLADDING',
-            area: this.walls.cladding.area ?? this.walls.claddingArea,
-          }),
+          wallpaper: cleanFixed(this.walls.wallpaper),
+          doors: cleanQuantity(this.walls.doors),
+          windows: cleanQuantity(this.walls.windows),
+          cladding: cleanArea(this.walls.cladding),
         },
         flooring: {
           tiles: {

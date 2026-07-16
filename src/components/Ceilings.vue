@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="ceilings-step">
     <header class="step-header text-center mb-4">
       <h2 class="page-title mb-2 text-dark fw-bold">Ceiling &amp; Lighting</h2>
