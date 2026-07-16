@@ -62,7 +62,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { usePlannerStore } from '@/stores/Planner'
+import { resolveTilePriceItemCode, usePlannerStore } from '@/stores/Planner'
 
 import Design from '@/components/Design.vue'
 import Ceilings from '@/components/Ceilings.vue'
@@ -244,47 +244,147 @@ const isStepValid = computed(() => {
 
   if (store.currentStep === 4) {
     const f = store.flooring
+    const m = store.measurements
+    const validMaterial =
+      f.tiles.material === 'Porcelain' || f.tiles.material === 'Marble' || f.tiles.material === 'Granite'
+    const validTileSize = f.tiles.tileSize === '60x60' || f.tiles.tileSize === '120x120'
+    const resolvedTileCode = resolveTilePriceItemCode(f.tiles.material, f.tiles.tileSize)
+    const validSkirtingCodes = ['SKIRTING_10', 'SKIRTING_15']
+
+    const tilesAreValid =
+      m.flooringArea !== null &&
+      m.flooringArea > 0 &&
+      f.tiles.enabled &&
+      validMaterial &&
+      validTileSize &&
+      f.tiles.priceItemCode !== null &&
+      f.tiles.priceItemCode === resolvedTileCode
+
+    const skirtingIsValid =
+      f.skirting.enabled &&
+      f.skirting.priceItemCode !== null &&
+      validSkirtingCodes.includes(f.skirting.priceItemCode) &&
+      f.skirting.length !== null &&
+      f.skirting.length > 0
+
+    const parquetIsValid =
+      f.parquetAnswered &&
+      (!f.parquet.enabled ||
+        (f.parquet.priceItemCode === 'PARQUET' &&
+          f.parquet.area !== null &&
+          f.parquet.area > 0))
+
+    const glassworkIsValid =
+      f.glassworkAnswered &&
+      (!f.glasswork.enabled ||
+        (f.glasswork.priceItemCode === 'GLASS_WORK' &&
+          f.glasswork.area !== null &&
+          f.glasswork.area > 0))
 
     return (
-      f.material !== '' &&
-      f.manualArea !== null &&
-      f.manualArea > 0 &&
-      f.tileSize !== '' &&
-      f.skirtingSize !== null &&
-      f.skirtingLength !== null &&
-      f.skirtingLength > 0 &&
-      f.hasParquet !== null &&
-      (f.hasParquet === false || (f.parquetArea !== null && f.parquetArea > 0)) &&
-      f.hasGlassWork !== null &&
-      (f.hasGlassWork === false || (f.glassWorkArea !== null && f.glassWorkArea > 0))
+      tilesAreValid &&
+      skirtingIsValid &&
+      parquetIsValid &&
+      glassworkIsValid
     )
   }
 
   if (store.currentStep === 5) {
     const furn = store.furnishing
+    const validBedCodes = ['BED_KING', 'BED_QUEEN']
+    const validAcCodes = ['AC_SPLIT', 'AC_CASSETTE']
+
+    const bedIsValid =
+      furn.bed.enabled &&
+      furn.bed.priceItemCode !== null &&
+      validBedCodes.includes(furn.bed.priceItemCode)
+
+    const headboardCladdingIsValid =
+      furn.headboardCladdingAnswered &&
+      (!furn.headboardCladding.enabled ||
+        (furn.headboardCladding.priceItemCode === 'HEADBOARD_CLADDING' &&
+          ((furn.headboardCladding.pricingMode === 'Calculated' &&
+            furn.headboardCladding.area !== null &&
+            furn.headboardCladding.area > 0) ||
+            (furn.headboardCladding.pricingMode === 'Custom' &&
+              furn.headboardCladding.customPrice !== null &&
+              furn.headboardCladding.customPrice > 0))))
+
+    const sideTableIsValid =
+      furn.sideTableAnswered &&
+      (!furn.sideTable.enabled ||
+        (furn.sideTable.priceItemCode === 'SIDE_TABLE' &&
+          furn.sideTable.quantity !== null &&
+          furn.sideTable.quantity > 0))
+
+    const sideLampsAreValid =
+      furn.sideLampsAnswered &&
+      (!furn.sideLamps.enabled ||
+        (furn.sideLamps.priceItemCode === 'SIDE_LAMP' &&
+          furn.sideLamps.quantity !== null &&
+          furn.sideLamps.quantity > 0))
+
+    const tvUnitIsValid =
+      furn.tvUnitAnswered &&
+      (!furn.tvUnit.enabled ||
+        (furn.tvUnit.priceItemCode === 'TV_UNIT' &&
+          (furn.tvUnit.pricingMode === 'Calculated' ||
+            (furn.tvUnit.pricingMode === 'Custom' &&
+              furn.tvUnit.customPrice !== null &&
+              furn.tvUnit.customPrice > 0))))
+
+    const chairsAreValid =
+      furn.chairsAnswered &&
+      (!furn.chairs.enabled ||
+        (furn.chairs.priceItemCode === 'CHAIR' &&
+          furn.chairs.quantity !== null &&
+          furn.chairs.quantity > 0))
+
+    const stoolsAreValid =
+      furn.stoolsAnswered &&
+      (!furn.stools.enabled ||
+        (furn.stools.priceItemCode === 'STOOL' &&
+          furn.stools.quantity !== null &&
+          furn.stools.quantity > 0))
+
+    const dressingTableIsValid =
+      furn.dressingTableAnswered &&
+      (!furn.dressingTable.enabled || furn.dressingTable.priceItemCode === 'DRESSING_TABLE')
+
+    const carpetIsValid =
+      furn.carpetAnswered &&
+      (!furn.carpet.enabled ||
+        (furn.carpet.priceItemCode === 'CARPET' &&
+          furn.carpet.area !== null &&
+          furn.carpet.area > 0))
+
+    const benchIsValid =
+      furn.benchAnswered && (!furn.bench.enabled || furn.bench.priceItemCode === 'BENCH')
+
+    const acIsValid =
+      furn.acAnswered &&
+      (!furn.ac.enabled ||
+        (furn.ac.priceItemCode !== null &&
+          validAcCodes.includes(furn.ac.priceItemCode) &&
+          ((furn.ac.pricingMode === 'Calculated' &&
+            furn.ac.quantity !== null &&
+            furn.ac.quantity > 0) ||
+            (furn.ac.pricingMode === 'Custom' &&
+              furn.ac.customPrice !== null &&
+              furn.ac.customPrice > 0))))
 
     return (
-      furn.bedSize !== '' &&
-      (furn.hasBedsideCladding === false ||
-        (furn.bedsideCladdingArea !== null && furn.bedsideCladdingArea > 0)) &&
-      furn.sideTableChoice !== '' &&
-      furn.sideTableQuantity !== null &&
-      furn.sideTableQuantity > 0 &&
-      furn.hasSideLamps !== null &&
-      (furn.hasSideLamps === false ||
-        (furn.sideLampQuantity !== null && furn.sideLampQuantity > 0)) &&
-      furn.tvUnitChoice !== '' &&
-      furn.chairsLegacy.exists !== null &&
-      (furn.chairsLegacy.exists === false || furn.chairsLegacy.count > 0) &&
-      furn.stoolsLegacy.exists !== null &&
-      (furn.stoolsLegacy.exists === false || furn.stoolsLegacy.count > 0) &&
-      furn.hasDressingTable !== null &&
-      furn.hasCarpet !== null &&
-      (furn.hasCarpet === false || (furn.carpetArea !== null && furn.carpetArea > 0)) &&
-      furn.hasBench !== null &&
-      furn.acType !== '' &&
-      furn.acQuantity !== null &&
-      furn.acQuantity > 0
+      bedIsValid &&
+      headboardCladdingIsValid &&
+      sideTableIsValid &&
+      sideLampsAreValid &&
+      tvUnitIsValid &&
+      chairsAreValid &&
+      stoolsAreValid &&
+      dressingTableIsValid &&
+      carpetIsValid &&
+      benchIsValid &&
+      acIsValid
     )
   }
 

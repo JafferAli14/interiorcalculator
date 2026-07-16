@@ -108,6 +108,21 @@ const LIGHT_CODES: Record<Exclude<LightingType, ''>, string> = {
   Strip: 'LIGHT_STRIP',
 }
 
+export function resolveTilePriceItemCode(
+  material: string | null | undefined,
+  tileSize: string | null | undefined,
+): string | null {
+  if (!material || !tileSize) return null
+
+  const sizeCode = tileSize === '120x120' ? '120' : tileSize === '60x60' ? '60' : null
+  if (!sizeCode) return null
+
+  const materialCode = material.toUpperCase()
+  if (!['PORCELAIN', 'MARBLE', 'GRANITE'].includes(materialCode)) return null
+
+  return `FLOOR_${materialCode}_${sizeCode}`
+}
+
 function fixedItem(): FixedItem {
   return { enabled: false, priceItemCode: null }
 }
@@ -363,8 +378,10 @@ function createInitialState() {
       skirting: lengthItem(),
       parquet: areaItem(),
       glasswork: areaItem(),
+      parquetAnswered: false,
+      glassworkAnswered: false,
 
-      // Temporary compatibility fields used by the current Flooring.vue.
+      // Temporary compatibility fields retained for legacy hydration and unrelated migration phases.
       material: '' as FloorMaterial,
       manualArea: null as number | null,
       tileSize: '' as TileSize,
@@ -388,8 +405,18 @@ function createInitialState() {
       carpet: areaItem(),
       bench: fixedItem(),
       ac: customQuantityItem(),
+      headboardCladdingAnswered: false,
+      sideTableAnswered: false,
+      sideLampsAnswered: false,
+      tvUnitAnswered: false,
+      chairsAnswered: false,
+      stoolsAnswered: false,
+      dressingTableAnswered: false,
+      carpetAnswered: false,
+      benchAnswered: false,
+      acAnswered: false,
 
-      // Temporary compatibility fields used by the current Furnishing.vue.
+      // Temporary compatibility fields retained for legacy hydration and unrelated migration phases.
       bedSize: '' as BedSize,
       hasHeadboard: false,
       hasBedsideCladding: false,
@@ -518,8 +545,7 @@ export const usePlannerStore = defineStore('planner', {
     buildPreviewPayload(): BedroomPlannerRequest {
       const ceilingArea = positiveOrNull(this.measurements.ceilingArea)
       const wallArea = positiveOrNull(this.measurements.wallArea)
-      const flooringArea =
-        positiveOrNull(this.measurements.flooringArea) ?? positiveOrNull(this.flooring.manualArea)
+      const flooringArea = positiveOrNull(this.measurements.flooringArea)
 
       const ceilingLights = this.ceiling.ceilingLights
         .filter((light) => light.enabled)
@@ -588,104 +614,31 @@ export const usePlannerStore = defineStore('planner', {
         flooring: {
           tiles: {
             ...cleanFixed({
-              enabled: this.flooring.tiles.enabled || this.flooring.material !== '',
-              priceItemCode:
-                this.flooring.tiles.priceItemCode ??
-                (this.flooring.material && this.flooring.tileSize
-                  ? `TILES_${this.flooring.material}_${this.flooring.tileSize}`.toUpperCase()
-                  : null),
+              enabled: this.flooring.tiles.enabled,
+              priceItemCode: resolveTilePriceItemCode(
+                this.flooring.tiles.material,
+                this.flooring.tiles.tileSize,
+              ),
             }),
-            material: cleanString(this.flooring.tiles.material ?? this.flooring.material),
-            tileSize: cleanString(this.flooring.tiles.tileSize ?? this.flooring.tileSize),
+            material: cleanString(this.flooring.tiles.material),
+            tileSize: cleanString(this.flooring.tiles.tileSize),
           },
-          skirting: cleanLength({
-            enabled: this.flooring.skirting.enabled || this.flooring.skirtingSize !== null,
-            priceItemCode:
-              this.flooring.skirting.priceItemCode ??
-              (this.flooring.skirtingSize ? `SKIRTING_${this.flooring.skirtingSize}CM` : null),
-            length: this.flooring.skirting.length ?? this.flooring.skirtingLength,
-          }),
-          parquet: cleanArea({
-            enabled: this.flooring.parquet.enabled || this.flooring.hasParquet === true,
-            priceItemCode: this.flooring.parquet.priceItemCode ?? 'PARQUET',
-            area: this.flooring.parquet.area ?? this.flooring.parquetArea,
-          }),
-          glasswork: cleanArea({
-            enabled: this.flooring.glasswork.enabled || this.flooring.hasGlassWork === true,
-            priceItemCode: this.flooring.glasswork.priceItemCode ?? 'GLASSWORK',
-            area: this.flooring.glasswork.area ?? this.flooring.glassWorkArea,
-          }),
+          skirting: cleanLength(this.flooring.skirting),
+          parquet: cleanArea(this.flooring.parquet),
+          glasswork: cleanArea(this.flooring.glasswork),
         },
         furnishing: {
-          bed: cleanFixed({
-            enabled: this.furnishing.bed.enabled || this.furnishing.bedSize !== '',
-            priceItemCode:
-              this.furnishing.bed.priceItemCode ??
-              (this.furnishing.bedSize ? `BED_${this.furnishing.bedSize}`.toUpperCase() : null),
-          }),
-          headboardCladding: cleanCustomArea({
-            enabled:
-              this.furnishing.headboardCladding.enabled ||
-              this.furnishing.hasHeadboard ||
-              this.furnishing.hasBedsideCladding,
-            priceItemCode: this.furnishing.headboardCladding.priceItemCode ?? 'HEADBOARD_CLADDING',
-            pricingMode:
-              this.furnishing.headboardCladding.pricingMode ??
-              (this.furnishing.hasHeadboard || this.furnishing.hasBedsideCladding ? 'Calculated' : null),
-            area: this.furnishing.headboardCladding.area ?? this.furnishing.bedsideCladdingArea,
-            customPrice: this.furnishing.headboardCladding.customPrice,
-          }),
-          sideTable: cleanQuantity({
-            enabled: this.furnishing.sideTable.enabled || this.furnishing.sideTableChoice !== '',
-            priceItemCode: this.furnishing.sideTable.priceItemCode ?? 'SIDE_TABLE',
-            quantity: this.furnishing.sideTable.quantity ?? this.furnishing.sideTableQuantity,
-          }),
-          sideLamps: cleanQuantity({
-            enabled: this.furnishing.sideLamps.enabled || this.furnishing.hasSideLamps === true,
-            priceItemCode: this.furnishing.sideLamps.priceItemCode ?? 'SIDE_LAMPS',
-            quantity: this.furnishing.sideLamps.quantity ?? this.furnishing.sideLampQuantity,
-          }),
-          tvUnit: cleanCustomFixed({
-            enabled: this.furnishing.tvUnit.enabled || this.furnishing.tvUnitChoice !== '',
-            priceItemCode: this.furnishing.tvUnit.priceItemCode ?? 'TV_UNIT',
-            pricingMode:
-              this.furnishing.tvUnit.pricingMode ??
-              (this.furnishing.tvUnitChoice ? 'Calculated' : null),
-            customPrice: this.furnishing.tvUnit.customPrice,
-          }),
-          chairs: cleanQuantity({
-            enabled: this.furnishing.chairs.enabled || this.furnishing.chairsLegacy.exists === true,
-            priceItemCode: this.furnishing.chairs.priceItemCode ?? 'CHAIRS',
-            quantity: this.furnishing.chairs.quantity ?? this.furnishing.chairsLegacy.count,
-          }),
-          stools: cleanQuantity({
-            enabled: this.furnishing.stools.enabled || this.furnishing.stoolsLegacy.exists === true,
-            priceItemCode: this.furnishing.stools.priceItemCode ?? 'STOOLS',
-            quantity: this.furnishing.stools.quantity ?? this.furnishing.stoolsLegacy.count,
-          }),
-          dressingTable: cleanFixed({
-            enabled: this.furnishing.dressingTable.enabled || this.furnishing.hasDressingTable === true,
-            priceItemCode: this.furnishing.dressingTable.priceItemCode ?? 'DRESSING_TABLE',
-          }),
-          carpet: cleanArea({
-            enabled: this.furnishing.carpet.enabled || this.furnishing.hasCarpet === true,
-            priceItemCode: this.furnishing.carpet.priceItemCode ?? 'CARPET',
-            area: this.furnishing.carpet.area ?? this.furnishing.carpetArea,
-          }),
-          bench: cleanFixed({
-            enabled: this.furnishing.bench.enabled || this.furnishing.hasBench === true,
-            priceItemCode: this.furnishing.bench.priceItemCode ?? 'BENCH',
-          }),
-          ac: cleanCustomQuantity({
-            enabled: this.furnishing.ac.enabled || this.furnishing.acType !== '',
-            priceItemCode:
-              this.furnishing.ac.priceItemCode ??
-              (this.furnishing.acType ? `AC_${this.furnishing.acType}`.toUpperCase() : null),
-            pricingMode:
-              this.furnishing.ac.pricingMode ?? (this.furnishing.acType ? 'Calculated' : null),
-            quantity: this.furnishing.ac.quantity ?? this.furnishing.acQuantity,
-            customPrice: this.furnishing.ac.customPrice,
-          }),
+          bed: cleanFixed(this.furnishing.bed),
+          headboardCladding: cleanCustomArea(this.furnishing.headboardCladding),
+          sideTable: cleanQuantity(this.furnishing.sideTable),
+          sideLamps: cleanQuantity(this.furnishing.sideLamps),
+          tvUnit: cleanCustomFixed(this.furnishing.tvUnit),
+          chairs: cleanQuantity(this.furnishing.chairs),
+          stools: cleanQuantity(this.furnishing.stools),
+          dressingTable: cleanFixed(this.furnishing.dressingTable),
+          carpet: cleanArea(this.furnishing.carpet),
+          bench: cleanFixed(this.furnishing.bench),
+          ac: cleanCustomQuantity(this.furnishing.ac),
         },
         additionalRequirements,
       }

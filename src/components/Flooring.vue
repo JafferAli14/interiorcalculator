@@ -18,14 +18,14 @@
             v-for="item in materialOptions"
             :key="item.value"
             class="image-option-cell"
-            @click="store.flooring.material = item.value"
+            @click="selectTileMaterial(item.value)"
           >
             <StyleCard
               compact
               :name="item.label"
               :description="item.description"
               :image="item.image"
-              :is-selected="store.flooring.material === item.value"
+              :is-selected="store.flooring.tiles.material === item.value"
             />
           </div>
         </div>
@@ -43,7 +43,7 @@
               class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
             >
               <input
-                v-model.number="store.flooring.manualArea"
+                v-model.number="store.measurements.flooringArea"
                 type="number"
                 class="form-control border-0 px-3"
                 placeholder="Ex: 250"
@@ -66,28 +66,27 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.flooring.tileSize === '120x120' }"
-            @click="store.flooring.tileSize = '120x120'"
+            :class="{ selected: store.flooring.tiles.tileSize === '120x120' }"
+            @click="selectTileSize('120x120')"
           >
             <span class="choice-icon">120</span>
-            <strong>120 × 120</strong>
+            <strong>120 x 120</strong>
             <small>Large format premium tile</small>
           </button>
 
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.flooring.tileSize === '60x60' }"
-            @click="store.flooring.tileSize = '60x60'"
+            :class="{ selected: store.flooring.tiles.tileSize === '60x60' }"
+            @click="selectTileSize('60x60')"
           >
             <span class="choice-icon">60</span>
-            <strong>60 × 60</strong>
+            <strong>60 x 60</strong>
             <small>Standard tile size</small>
           </button>
         </div>
       </section>
 
-      <!-- 4. Skirting -->
       <!-- 4. Skirting -->
       <section class="input-block mb-4 pb-4 border-bottom">
         <h3 class="input-block-title h6 fw-bold mb-1">4. Skirting</h3>
@@ -97,8 +96,8 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.flooring.skirtingSize === 10 }"
-            @click="store.flooring.skirtingSize = 10"
+            :class="{ selected: store.flooring.skirting.priceItemCode === 'SKIRTING_10' }"
+            @click="selectSkirting('SKIRTING_10')"
           >
             <span class="choice-icon">10</span>
             <strong>10cm Skirting</strong>
@@ -108,8 +107,8 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.flooring.skirtingSize === 15 }"
-            @click="store.flooring.skirtingSize = 15"
+            :class="{ selected: store.flooring.skirting.priceItemCode === 'SKIRTING_15' }"
+            @click="selectSkirting('SKIRTING_15')"
           >
             <span class="choice-icon">15</span>
             <strong>15cm Skirting</strong>
@@ -124,7 +123,7 @@
               class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
             >
               <input
-                v-model.number="store.flooring.skirtingLength"
+                v-model.number="store.flooring.skirting.length"
                 type="number"
                 class="form-control border-0 px-3"
                 placeholder="Ex: 35"
@@ -139,7 +138,6 @@
       </section>
 
       <!-- 5. Parquet -->
-      <!-- 5. Parquet -->
       <section class="input-block mb-4 pb-4 border-bottom">
         <h3 class="input-block-title h6 fw-bold mb-1">5. Parquet</h3>
         <p class="text-muted small mb-3">Does the bedroom require parquet flooring?</p>
@@ -148,13 +146,10 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.flooring.hasParquet === true }"
-            @click="
-              store.flooring.hasParquet = true;
-              store.flooring.parquetArea = store.flooring.parquetArea || 1;
-            "
+            :class="{ selected: store.flooring.parquet.enabled }"
+            @click="selectParquet(true)"
           >
-            <span class="choice-icon">✓</span>
+            <span class="choice-icon">Y</span>
             <strong>Yes</strong>
             <small>Add parquet flooring</small>
           </button>
@@ -162,26 +157,23 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.flooring.hasParquet === false }"
-            @click="
-              store.flooring.hasParquet = false;
-              store.flooring.parquetArea = null;
-            "
+            :class="{ selected: store.flooring.parquetAnswered && !store.flooring.parquet.enabled }"
+            @click="selectParquet(false)"
           >
-            <span class="choice-icon">×</span>
+            <span class="choice-icon">N</span>
             <strong>No</strong>
             <small>No parquet required</small>
           </button>
         </div>
 
-        <div v-if="store.flooring.hasParquet === true" class="row">
+        <div v-if="store.flooring.parquet.enabled" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Parquet Area</label>
             <div
               class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
             >
               <input
-                v-model.number="store.flooring.parquetArea"
+                v-model.number="store.flooring.parquet.area"
                 type="number"
                 class="form-control border-0 px-3"
                 placeholder="Ex: 80"
@@ -196,7 +188,6 @@
       </section>
 
       <!-- 6. Glass Work -->
-      <!-- 6. Glass Work -->
       <section class="input-block">
         <h3 class="input-block-title h6 fw-bold mb-1">6. Glass Work</h3>
         <p class="text-muted small mb-3">Does this section require glass work?</p>
@@ -205,13 +196,10 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.flooring.hasGlassWork === true }"
-            @click="
-              store.flooring.hasGlassWork = true;
-              store.flooring.glassWorkArea = store.flooring.glassWorkArea || 1;
-            "
+            :class="{ selected: store.flooring.glasswork.enabled }"
+            @click="selectGlasswork(true)"
           >
-            <span class="choice-icon">✓</span>
+            <span class="choice-icon">Y</span>
             <strong>Yes</strong>
             <small>Add glass work</small>
           </button>
@@ -219,26 +207,23 @@
           <button
             type="button"
             class="choice-card"
-            :class="{ selected: store.flooring.hasGlassWork === false }"
-            @click="
-              store.flooring.hasGlassWork = false;
-              store.flooring.glassWorkArea = null;
-            "
+            :class="{ selected: store.flooring.glassworkAnswered && !store.flooring.glasswork.enabled }"
+            @click="selectGlasswork(false)"
           >
-            <span class="choice-icon">×</span>
+            <span class="choice-icon">N</span>
             <strong>No</strong>
             <small>No glass work required</small>
           </button>
         </div>
 
-        <div v-if="store.flooring.hasGlassWork === true" class="row">
+        <div v-if="store.flooring.glasswork.enabled" class="row">
           <div class="col-12 col-md-9 col-lg-7">
             <label class="form-label small fw-bold text-muted mb-2">Glass Work Area</label>
             <div
               class="input-group input-group-lg border rounded-3 overflow-hidden shadow-sm custom-focus-within"
             >
               <input
-                v-model.number="store.flooring.glassWorkArea"
+                v-model.number="store.flooring.glasswork.area"
                 type="number"
                 class="form-control border-0 px-3"
                 placeholder="Ex: 40"
@@ -260,9 +245,12 @@ import porcelainImg from '@/assets/Flooring/porcelain.png'
 import marbleImg from '@/assets/Flooring/marble.png'
 import graniteImg from '@/assets/Flooring/granite.png'
 import StyleCard from '@/components/StyleCard.vue'
-import { usePlannerStore } from '@/stores/Planner'
+import { resolveTilePriceItemCode, usePlannerStore } from '@/stores/Planner'
 
 const store = usePlannerStore()
+
+type Material = 'Porcelain' | 'Marble' | 'Granite'
+type TileSize = '120x120' | '60x60'
 
 const materialOptions = [
   {
@@ -284,6 +272,44 @@ const materialOptions = [
     image: graniteImg,
   },
 ]
+
+function syncTileCode() {
+  const code = resolveTilePriceItemCode(
+    store.flooring.tiles.material,
+    store.flooring.tiles.tileSize,
+  )
+  store.flooring.tiles.priceItemCode = code
+  store.flooring.tiles.enabled = code !== null
+}
+
+function selectTileMaterial(material: Material) {
+  store.flooring.tiles.material = material
+  syncTileCode()
+}
+
+function selectTileSize(tileSize: TileSize) {
+  store.flooring.tiles.tileSize = tileSize
+  syncTileCode()
+}
+
+function selectSkirting(code: 'SKIRTING_10' | 'SKIRTING_15') {
+  store.flooring.skirting.enabled = true
+  store.flooring.skirting.priceItemCode = code
+}
+
+function selectParquet(enabled: boolean) {
+  store.flooring.parquetAnswered = true
+  store.flooring.parquet.enabled = enabled
+  store.flooring.parquet.priceItemCode = enabled ? 'PARQUET' : null
+  store.flooring.parquet.area = enabled ? store.flooring.parquet.area || 1 : null
+}
+
+function selectGlasswork(enabled: boolean) {
+  store.flooring.glassworkAnswered = true
+  store.flooring.glasswork.enabled = enabled
+  store.flooring.glasswork.priceItemCode = enabled ? 'GLASS_WORK' : null
+  store.flooring.glasswork.area = enabled ? store.flooring.glasswork.area || 1 : null
+}
 </script>
 
 <style scoped>
