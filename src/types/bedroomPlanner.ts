@@ -125,7 +125,6 @@ export interface AdditionalRequirement {
   itemName: string
   description: string | null
   customPrice: number | null
-  sortOrder: number
 }
 
 export interface ProjectPriceLine {

@@ -28,6 +28,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/estimate-report',
+      name: 'estimate-report',
+      component: () => import('@/pages/EstimateReportPage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/projects',
       name: 'projects',
       component: () => import('@/pages/SavedProjectsPage.vue'),

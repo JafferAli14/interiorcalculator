@@ -39,6 +39,12 @@
         <transition name="page-fade" mode="out-in">
           <component :is="currentStepComponent" />
         </transition>
+
+        <div v-if="store.currentStep === 6" class="estimate-feedback">
+          <div v-if="store.preview.error" class="alert alert-danger mb-3">
+            {{ store.preview.error }}
+          </div>
+        </div>
       </main>
 
       <footer class="nav-footer d-flex justify-content-between mt-5 pt-4">
@@ -49,9 +55,18 @@
 
         <div v-else></div>
 
-        <button @click="handleNext" class="btn btn-next" :disabled="!isStepValid">
-          {{ store.currentStep === 6 ? 'Get Estimate' : 'Next Step' }}
-          <i class="bi bi-arrow-right ms-2"></i>
+        <button
+          @click="handleNext"
+          class="btn btn-next"
+          :disabled="!isStepValid || store.preview.loading"
+        >
+          <span
+            v-if="store.currentStep === 6 && store.preview.loading"
+            class="spinner-border spinner-border-sm me-2"
+            aria-hidden="true"
+          ></span>
+          {{ nextButtonLabel }}
+          <i v-if="!(store.currentStep === 6 && store.preview.loading)" class="bi bi-arrow-right ms-2"></i>
         </button>
       </footer>
     </div>
@@ -99,6 +114,11 @@ const currentStepComponent = computed(() => {
 const progressLineWidth = computed(() => {
   const maxSteps = steps.length - 1
   return `${((store.currentStep - 1) / maxSteps) * 100}%`
+})
+
+const nextButtonLabel = computed(() => {
+  if (store.currentStep !== 6) return 'Next Step'
+  return store.preview.loading ? 'Calculating Estimate...' : 'Get Estimate'
 })
 
 const isStepValid = computed(() => {
@@ -389,25 +409,29 @@ const isStepValid = computed(() => {
   }
 
   if (store.currentStep === 6) {
-    const a = store.additional
+    const validCategories = ['Design', 'Ceiling', 'Walls', 'Flooring', 'Furnishing', 'Other']
 
-    if (a.hasAdditional === false) return true
-
-    if (a.hasAdditional === true) {
-      return a.notes.trim() !== '' || (a.extraPrice !== null && a.extraPrice > 0)
-    }
-
-    return false
+    return store.additionalRequirements.every(
+      (requirement) =>
+        validCategories.includes(requirement.category) &&
+        requirement.itemName.trim() !== '' &&
+        requirement.customPrice !== null &&
+        requirement.customPrice > 0,
+    )
   }
 
   return true
 })
 
-const handleNext = () => {
+const handleNext = async () => {
   if (!isStepValid.value) return
 
   if (store.currentStep === 6) {
-    console.log('Generating estimate...', store.$state)
+    if (store.preview.loading) return
+    await store.previewEstimate()
+    if (store.preview.data && !store.preview.error) {
+      router.push('/estimate-report')
+    }
   } else {
     store.nextStep()
   }
@@ -547,6 +571,13 @@ const handleNext = () => {
   flex-direction: column;
   align-items: center;
   width: 100%;
+}
+
+.estimate-feedback {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .btn-next {

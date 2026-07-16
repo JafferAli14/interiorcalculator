@@ -261,10 +261,17 @@ function cleanCustomArea(item: CustomAreaItem): CustomAreaItem {
   }
 }
 
-function cleanAdditionalRequirement(
-  item: AdditionalRequirementDraft,
-  index: number,
-): AdditionalRequirement | null {
+function createAdditionalRequirementDraft(): AdditionalRequirementDraft {
+  return {
+    id: crypto.randomUUID(),
+    category: 'Other',
+    itemName: '',
+    description: '',
+    customPrice: null,
+  }
+}
+
+function cleanAdditionalRequirement(item: AdditionalRequirementDraft): AdditionalRequirement | null {
   const itemName = item.itemName.trim()
   if (!itemName || !positiveOrNull(item.customPrice)) return null
 
@@ -273,7 +280,6 @@ function cleanAdditionalRequirement(
     itemName,
     description: cleanString(item.description),
     customPrice: positiveOrNull(item.customPrice),
-    sortOrder: index + 1,
   }
 }
 
@@ -445,7 +451,7 @@ function createInitialState() {
     additionalRequirements: [] as AdditionalRequirementDraft[],
 
     additional: {
-      // Temporary compatibility fields used by the current AdditionalInput.vue.
+      // Temporary compatibility fields retained for legacy hydration.
       hasAdditional: null as boolean | null,
       notes: '',
       extraPrice: null as number | null,
@@ -462,6 +468,7 @@ function createInitialState() {
       data: null as BedroomPreviewResponse | null,
       loading: false,
       error: null as string | null,
+      isStale: false,
     },
   }
 }
@@ -524,7 +531,41 @@ export const usePlannerStore = defineStore('planner', {
     },
 
     prevStep() {
+      if (this.currentStep === 6 && this.preview.data) {
+        this.markPreviewStale()
+      }
+
       if (this.currentStep > 1) this.currentStep--
+    },
+
+    markPreviewStale() {
+      if (this.preview.data) {
+        this.preview.isStale = true
+      }
+    },
+
+    addAdditionalRequirement() {
+      this.markPreviewStale()
+      this.additionalRequirements.push(createAdditionalRequirementDraft())
+    },
+
+    removeAdditionalRequirement(index: number) {
+      this.markPreviewStale()
+      this.additionalRequirements.splice(index, 1)
+    },
+
+    updateAdditionalRequirement(
+      index: number,
+      changes: Partial<Omit<AdditionalRequirementDraft, 'id'>>,
+    ) {
+      const existing = this.additionalRequirements[index]
+      if (!existing) return
+
+      this.markPreviewStale()
+      this.additionalRequirements[index] = {
+        ...existing,
+        ...changes,
+      }
     },
 
     async fetchPriceItems() {
@@ -552,22 +593,8 @@ export const usePlannerStore = defineStore('planner', {
         .map((light) => cleanQuantity(light))
 
       const additionalRequirements = this.additionalRequirements
-        .map(cleanAdditionalRequirement)
+        .map((item) => cleanAdditionalRequirement(item))
         .filter((item): item is AdditionalRequirement => item !== null)
-
-      if (
-        additionalRequirements.length === 0 &&
-        this.additional.hasAdditional === true &&
-        (this.additional.notes.trim() || positiveOrNull(this.additional.extraPrice))
-      ) {
-        additionalRequirements.push({
-          category: 'Other',
-          itemName: this.additional.notes.trim() || 'Additional requirement',
-          description: this.additional.notes.trim() || null,
-          customPrice: positiveOrNull(this.additional.extraPrice),
-          sortOrder: 1,
-        })
-      }
 
       return {
         schemaVersion: this.schemaVersion,
@@ -649,9 +676,12 @@ export const usePlannerStore = defineStore('planner', {
 
       this.preview.loading = true
       this.preview.error = null
+      this.preview.data = null
+      this.preview.isStale = false
 
       try {
         this.preview.data = await previewBedroomProject(this.buildPreviewPayload())
+        this.preview.isStale = false
       } catch (error) {
         this.preview.error = error instanceof Error ? error.message : 'Unable to preview estimate.'
       } finally {
@@ -662,6 +692,7 @@ export const usePlannerStore = defineStore('planner', {
     clearPreview() {
       this.preview.data = null
       this.preview.error = null
+      this.preview.isStale = false
     },
 
     hydrateFromLegacy(legacy: LegacyPlannerState) {
@@ -725,7 +756,6 @@ export const usePlannerStore = defineStore('planner', {
             itemName: legacy.additional.notes?.trim() || 'Additional requirement',
             description: legacy.additional.notes?.trim() || null,
             customPrice: positiveOrNull(legacy.additional.extraPrice),
-            sortOrder: 1,
           },
         ]
       }
