@@ -19,14 +19,27 @@
         <h2>Saved Projects</h2>
         <p>View previous project reports</p>
       </div>
+
+      <div v-if="isSuperAdmin" class="dashboard-card" @click="goToPriceManagement">
+        <h2>Price Management</h2>
+        <p>Manage catalogue rates and active items</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+const isSuperAdmin = computed(() => {
+  const adminUser = localStorage.getItem('adminUser')
+  const token = localStorage.getItem('adminToken')
+
+  return hasSuperAdminRole(adminUser) || hasSuperAdminRoleFromToken(token)
+})
 
 const goToPlanner = () => {
   router.push('/planner')
@@ -36,10 +49,65 @@ const goToProjects = () => {
   router.push('/projects')
 }
 
+const goToPriceManagement = () => {
+  router.push('/superadmin/price-items')
+}
+
 const logout = () => {
   localStorage.removeItem('adminToken')
   localStorage.removeItem('adminUser')
   router.push('/login')
+}
+
+function hasSuperAdminRole(rawUser: string | null): boolean {
+  if (!rawUser) return false
+
+  try {
+    const data = JSON.parse(rawUser) as Record<string, unknown>
+    return hasRole(data)
+  } catch {
+    return false
+  }
+}
+
+function hasSuperAdminRoleFromToken(token: string | null): boolean {
+  const payload = token?.split('.')[1]
+  if (!payload) return false
+
+  try {
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')
+    const data = JSON.parse(atob(padded)) as Record<string, unknown>
+    return hasRole(data)
+  } catch {
+    return false
+  }
+}
+
+function hasRole(data: Record<string, unknown>): boolean {
+  if (data.isSuperAdmin === true) return true
+
+  const roleKeys = [
+    'role',
+    'roles',
+    'userRole',
+    'adminRole',
+    'type',
+    'userType',
+    'adminType',
+    'http://schemas.microsoft.com/ws/2008/06/identity/claims/role',
+  ]
+
+  return roleKeys.some((key) => {
+    const value = data[key]
+
+    if (typeof value === 'string') return value.toLowerCase() === 'superadmin'
+    if (Array.isArray(value)) {
+      return value.some((item) => typeof item === 'string' && item.toLowerCase() === 'superadmin')
+    }
+
+    return false
+  })
 }
 </script>
 
