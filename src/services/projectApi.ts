@@ -1,8 +1,15 @@
 import axios from 'axios'
 import api from './api'
-import type { BedroomPlannerRequest, BedroomPreviewResponse } from '@/types/bedroomPlanner'
+import type {
+  BedroomPlannerRequest,
+  BedroomPreviewResponse,
+  SaveBedroomProjectRequest,
+  SavedBedroomProjectDetailResponse,
+  SavedBedroomProjectListItem,
+  SavedBedroomProjectResponse,
+} from '@/types/bedroomPlanner'
 
-function getErrorMessage(error: unknown): string {
+function getErrorMessage(error: unknown, fallbackMessage: string): string {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data
 
@@ -35,7 +42,7 @@ function getErrorMessage(error: unknown): string {
   }
 
   if (error instanceof Error) return error.message
-  return 'Unable to preview bedroom project.'
+  return fallbackMessage
 }
 
 export async function previewBedroomProject(
@@ -45,6 +52,39 @@ export async function previewBedroomProject(
     const response = await api.post<BedroomPreviewResponse>('/Projects/preview', payload)
     return response.data
   } catch (error) {
-    throw new Error(getErrorMessage(error))
+    throw new Error(getErrorMessage(error, 'Unable to preview bedroom project.'))
+  }
+}
+
+export async function saveBedroomProject(
+  payload: SaveBedroomProjectRequest,
+): Promise<SavedBedroomProjectResponse> {
+  try {
+    const response = await api.post<SavedBedroomProjectResponse>('/Projects', payload)
+    return response.data
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to save bedroom project.'))
+  }
+}
+
+export async function getSavedProjects(): Promise<SavedBedroomProjectListItem[]> {
+  try {
+    const response = await api.get<SavedBedroomProjectListItem[]>('/Projects')
+    return response.data
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to load saved projects.'))
+  }
+}
+
+export async function getSavedProjectById(
+  projectId: string | number,
+): Promise<SavedBedroomProjectDetailResponse> {
+  try {
+    const response = await api.get<SavedBedroomProjectDetailResponse>(
+      `/Projects/${encodeURIComponent(String(projectId))}`,
+    )
+    return response.data
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to load saved project report.'))
   }
 }

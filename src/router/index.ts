@@ -98,6 +98,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/projects/:id',
+      name: 'saved-project-report',
+      component: () => import('@/pages/SavedProjectReportPage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/superadmin/price-items',
       name: 'superadmin-price-items',
       component: () => import('@/pages/SuperAdminPriceManagementPage.vue'),

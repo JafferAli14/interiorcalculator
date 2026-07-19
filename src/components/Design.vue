@@ -1,5 +1,9 @@
 <template>
   <div class="step-container">
+    <button type="button" class="dashboard-back" aria-label="Back to dashboard" @click="router.push('/dashboard')">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+
     <!-- Instruction -->
     <div class="step-intro text-center mb-4 mb-md-5">
       <h2 class="section-title mb-3">Select your design style</h2>
@@ -25,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import StyleCard from '@/components/StyleCard.vue'
 import { usePlannerStore } from '@/stores/Planner'
 // Importing images from assets
@@ -33,6 +38,7 @@ import classicImg from '@/assets/classic.png'
 import neoclassicImg from '@/assets/neo-classic.png'
 
 const store = usePlannerStore()
+const router = useRouter()
 
 const designStyles = [
   {
@@ -58,10 +64,38 @@ const designStyles = [
 
 <style scoped>
 .step-container {
+  position: relative;
   width: 100%;
   max-width: 960px;
   margin-inline: auto;
   padding-inline: clamp(0.75rem, 2vw, 1.25rem);
+}
+
+.dashboard-back {
+  position: fixed;
+  top: 22px;
+  left: 28px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(20, 20, 20, 0.1);
+  border-radius: 50%;
+  background: #ffffff;
+  color: #2c2c2c;
+  box-shadow: 0 10px 24px rgba(30, 40, 50, 0.08);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.dashboard-back:hover {
+  background: #f8f5ef;
+  box-shadow: 0 14px 30px rgba(30, 40, 50, 0.12);
+  transform: translateX(-2px);
 }
 
 .step-intro {
@@ -100,6 +134,11 @@ const designStyles = [
 }
 
 @media (max-width: 767.98px) {
+  .dashboard-back {
+    top: 16px;
+    left: 16px;
+  }
+
   .style-cards-grid {
     grid-template-columns: 1fr;
     max-width: 420px;

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { getPriceItems } from '@/services/priceItemApi'
-import { previewBedroomProject } from '@/services/projectApi'
+import { previewBedroomProject, saveBedroomProject } from '@/services/projectApi'
 import type {
   AdditionalRequirement,
   AdditionalRequirementDraft,
@@ -17,6 +17,7 @@ import type {
   QuantityItem,
   ReportCategory,
   BedroomPlannerRequest,
+  SavedBedroomProjectResponse,
 } from '@/types/bedroomPlanner'
 
 type CeilingLevel = 1 | 2
@@ -291,6 +292,8 @@ function createInitialState() {
     projectName: '',
     clientName: '',
     clientMobile: '',
+    clientEmail: '',
+    clientAddress: '',
 
     measurements: {
       roomLength: null as number | null,
@@ -470,6 +473,13 @@ function createInitialState() {
       error: null as string | null,
       isStale: false,
     },
+
+    save: {
+      data: null as SavedBedroomProjectResponse | null,
+      loading: false,
+      error: null as string | null,
+      completed: false,
+    },
   }
 }
 
@@ -542,6 +552,10 @@ export const usePlannerStore = defineStore('planner', {
       if (this.preview.data) {
         this.preview.isStale = true
       }
+
+      this.save.data = null
+      this.save.error = null
+      this.save.completed = false
     },
 
     addAdditionalRequirement() {
@@ -686,6 +700,43 @@ export const usePlannerStore = defineStore('planner', {
         this.preview.error = error instanceof Error ? error.message : 'Unable to preview estimate.'
       } finally {
         this.preview.loading = false
+      }
+    },
+
+    async saveProject() {
+      if (this.save.loading) return
+
+      this.save.error = null
+
+      if (!this.preview.data) {
+        this.save.error = 'Generate an estimate before saving the project.'
+        return
+      }
+
+      if (this.preview.isStale) {
+        this.save.error = 'Recalculate the estimate before saving the project.'
+        return
+      }
+
+      this.save.loading = true
+
+      try {
+        const payload = {
+          projectName: this.projectName.trim(),
+          customerName: this.clientName.trim(),
+          customerPhone: cleanString(this.clientMobile),
+          customerEmail: cleanString(this.clientEmail),
+          customerAddress: cleanString(this.clientAddress),
+          plannerRequest: this.buildPreviewPayload(),
+        }
+
+        this.save.data = await saveBedroomProject(payload)
+        this.save.completed = true
+      } catch (error) {
+        this.save.error = error instanceof Error ? error.message : 'Unable to save bedroom project.'
+        this.save.completed = false
+      } finally {
+        this.save.loading = false
       }
     },
 

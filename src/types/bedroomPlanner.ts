@@ -158,6 +158,56 @@ export interface BedroomPreviewResponse {
   warnings: string[]
 }
 
+export interface SaveBedroomProjectRequest {
+  projectName: string
+  customerName: string
+  customerPhone: string | null
+  customerEmail: string | null
+  customerAddress: string | null
+  plannerRequest: BedroomPlannerRequest
+}
+
+export interface SavedBedroomProjectResponse {
+  id: number | string
+  projectName: string
+  customerName: string
+  customerPhone: string | null
+  customerEmail: string | null
+  customerAddress: string | null
+  grandTotal?: number
+  currency?: string
+  createdAt?: string
+  updatedAt?: string | null
+}
+
+export interface SavedBedroomProjectListItem {
+  id: number | string
+  projectName: string
+  customerName: string
+  customerPhone: string | null
+  customerEmail: string | null
+  customerAddress: string | null
+  grandTotal: number
+  currency: string
+  createdAt: string
+}
+
+export interface SavedBedroomProjectDetailResponse {
+  id: number | string
+  projectName: string
+  customerName: string
+  customerPhone: string | null
+  customerEmail: string | null
+  customerAddress: string | null
+  currency: string
+  priceLines: ProjectPriceLine[]
+  categorySubtotals: CategorySubtotal[]
+  grandTotal: number
+  warnings: string[]
+  createdAt: string
+  plannerRequest?: BedroomPlannerRequest
+}
+
 export interface PriceItemResponse {
   id: number
   code: string

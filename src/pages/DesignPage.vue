@@ -70,11 +70,19 @@
         </button>
       </footer>
     </div>
+
+    <CustomerDetailsModal
+      v-if="showCustomerDetailsModal"
+      :loading="store.preview.loading"
+      :error="store.preview.error"
+      @cancel="closeCustomerDetailsModal"
+      @submit="generateEstimate"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { resolveTilePriceItemCode, usePlannerStore } from '@/stores/Planner'
@@ -85,10 +93,12 @@ import Walls from '@/components/Walls.vue'
 import Flooring from '@/components/Flooring.vue'
 import Furnishing from '@/components/Furnishing.vue'
 import AdditionalInput from '@/components/AdditionalInput.vue'
+import CustomerDetailsModal from '@/components/CustomerDetailsModal.vue'
 
 const store = usePlannerStore()
 
 const router = useRouter()
+const showCustomerDetailsModal = ref(false)
 
 const logout = () => {
   localStorage.removeItem('adminToken')
@@ -428,12 +438,36 @@ const handleNext = async () => {
 
   if (store.currentStep === 6) {
     if (store.preview.loading) return
-    await store.previewEstimate()
-    if (store.preview.data && !store.preview.error) {
-      router.push('/estimate-report')
-    }
+    showCustomerDetailsModal.value = true
   } else {
     store.nextStep()
+  }
+}
+
+function closeCustomerDetailsModal() {
+  if (store.preview.loading) return
+  showCustomerDetailsModal.value = false
+}
+
+async function generateEstimate(values: {
+  projectName: string
+  clientName: string
+  clientMobile: string
+  clientEmail: string
+  clientAddress: string
+}) {
+  if (store.preview.loading) return
+
+  store.projectName = values.projectName
+  store.clientName = values.clientName
+  store.clientMobile = values.clientMobile
+  store.clientEmail = values.clientEmail
+  store.clientAddress = values.clientAddress
+
+  await store.previewEstimate()
+  if (store.preview.data && !store.preview.error) {
+    showCustomerDetailsModal.value = false
+    router.push('/estimate-report')
   }
 }
 </script>
