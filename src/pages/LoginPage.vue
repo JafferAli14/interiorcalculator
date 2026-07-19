@@ -80,23 +80,24 @@ const handleLogin = async () => {
   background-position: center;
   display: flex;
   align-items: center;
-  padding-left: 13%;
+  padding: clamp(1.25rem, 4vw, 4rem) clamp(1.25rem, 8vw, 13%);
 }
 
 .login-card {
-  width: 380px;
+  width: min(100%, 380px);
   color: white;
 }
 
 .login-card h1 {
-  font-size: 56px;
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
   font-weight: 300;
   margin-bottom: 6px;
+  line-height: 1.05;
 }
 
 .login-card p {
-  font-size: 20px;
-  margin-bottom: 35px;
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  margin-bottom: clamp(1.75rem, 6vw, 2.2rem);
   opacity: 0.85;
 }
 
@@ -109,8 +110,9 @@ const handleLogin = async () => {
   padding: 14px 8px;
   margin-bottom: 22px;
   color: white;
-  font-size: 16px;
+  font-size: 1rem;
   outline: none;
+  min-height: 48px;
 }
 
 .login-card input::placeholder {
@@ -132,12 +134,13 @@ const handleLogin = async () => {
 
 button {
   width: 100%;
-  padding: 15px;
+  min-height: 52px;
+  padding: 14px 16px;
   border: none;
   background: #2f80c9;
   color: white;
-  font-size: 18px;
-  border-radius: 6px;
+  font-size: 1rem;
+  border-radius: 8px;
   cursor: pointer;
   letter-spacing: 1px;
 }
@@ -151,5 +154,23 @@ button:disabled {
   color: #ffb3b3;
   font-size: 14px !important;
   margin-bottom: 14px !important;
+}
+
+@media (max-width: 575.98px) {
+  .login-page {
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 100svh;
+    padding: 2rem 1.25rem;
+    background-position: 58% center;
+  }
+
+  .login-card {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+
+  .remember {
+    font-size: 0.95rem;
+  }
 }
 </style>

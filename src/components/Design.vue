@@ -137,6 +137,9 @@ const designStyles = [
   .dashboard-back {
     top: 16px;
     left: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
   }
 
   .style-cards-grid {
@@ -148,6 +151,25 @@ const designStyles = [
     grid-column: auto;
     justify-self: stretch;
     max-width: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .step-container {
+    padding-inline: 0;
+  }
+
+  .step-intro {
+    margin-bottom: 1.5rem !important;
+  }
+
+  .section-title {
+    font-size: 1.65rem;
+    line-height: 1.2;
+  }
+
+  .intro-copy {
+    font-size: 0.95rem;
   }
 }
 </style>

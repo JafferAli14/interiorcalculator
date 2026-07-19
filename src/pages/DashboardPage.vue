@@ -114,43 +114,48 @@ function hasRole(data: Record<string, unknown>): boolean {
 <style scoped>
 .dashboard-page {
   min-height: 100vh;
-  padding: 48px;
-  background: #f7f3ed;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: #f6f1e9;
   color: #2c2c2c;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 50px;
+  align-items: flex-start;
+  gap: 1rem;
+  width: min(100%, 960px);
+  margin-bottom: clamp(1.75rem, 6vw, 3.125rem);
 }
 
 .dashboard-header h1 {
-  font-size: 42px;
+  font-size: clamp(2rem, 7vw, 2.625rem);
   font-weight: 700;
   margin-bottom: 6px;
+  line-height: 1.12;
 }
 
 .dashboard-header p {
   color: #777;
-  font-size: 18px;
+  font-size: clamp(1rem, 3.5vw, 1.125rem);
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(260px, 1fr));
-  gap: 28px;
-  max-width: 900px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: clamp(1rem, 4vw, 1.75rem);
+  width: min(100%, 900px);
 }
 
 .dashboard-card {
   background: white;
-  border-radius: 22px;
-  padding: 36px;
+  border: 1px solid rgba(44, 44, 44, 0.08);
+  border-radius: 8px;
+  padding: clamp(1.25rem, 5vw, 2.25rem);
   cursor: pointer;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   transition: all 0.25s ease;
+  min-height: 150px;
 }
 
 .dashboard-card:hover {
@@ -158,21 +163,46 @@ function hasRole(data: Record<string, unknown>): boolean {
 }
 
 .dashboard-card h2 {
-  font-size: 28px;
+  font-size: clamp(1.35rem, 5vw, 1.75rem);
+  font-weight: 700;
   margin-bottom: 12px;
+  line-height: 1.2;
 }
 
 .dashboard-card p {
   color: #777;
+  margin: 0;
 }
 
 .logout-btn {
+  flex: 0 0 auto;
+  min-height: 44px;
   padding: 10px 22px;
   border: none;
-  border-radius: 999px;
+  border-radius: 8px;
   background: #2c2c2c;
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+@media (max-width: 575.98px) {
+  .dashboard-page {
+    min-height: 100svh;
+    padding: max(1rem, env(safe-area-inset-top)) 1rem max(1.25rem, env(safe-area-inset-bottom));
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .logout-btn {
+    width: 100%;
+  }
+
+  .dashboard-card {
+    min-height: 128px;
+  }
 }
 </style>

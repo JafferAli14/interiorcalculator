@@ -660,14 +660,66 @@ async function generateEstimate(values: {
 }
 
 @media (max-width: 575.98px) {
+  .planner-inner {
+    padding-top: 4.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
   .progress-tracker {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .tracker-line-bg {
+    top: 11px;
+  }
+
+  .tracker-node {
+    width: 14px;
+    height: 14px;
+  }
+
+  .tracker-step.active .tracker-node {
+    width: 20px;
+    height: 20px;
+    border-width: 3px;
+  }
+
+  .tracker-label {
+    display: none;
   }
 
   .tracker-counter {
-    text-align: left;
-    margin-top: 0.75rem;
+    min-width: auto;
+    text-align: center;
+    margin-top: 0;
+    font-size: 0.9rem;
+  }
+
+  .logout-btn {
+    top: 16px;
+    right: 16px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .nav-footer {
+    gap: 0.75rem;
+    margin-top: 2rem !important;
+    padding-top: 0 !important;
+  }
+
+  .btn-next,
+  .btn-back {
+    min-height: 44px;
+  }
+
+  .btn-next {
+    flex: 1;
+    padding-inline: 1rem;
   }
 }
 </style>
