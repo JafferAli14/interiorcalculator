@@ -41,6 +41,18 @@ npm run dev
 npm run build
 ```
 
+## Deployment Configuration
+
+Set `VITE_API_BASE_URL` to the public HTTPS backend API base URL before building or in your hosting provider environment.
+
+Example:
+
+```sh
+VITE_API_BASE_URL=https://your-backend.example.com/api
+```
+
+If `VITE_API_BASE_URL` is not set, the frontend uses `/api`, which is suitable when the backend is reverse-proxied under the same domain.
+
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
