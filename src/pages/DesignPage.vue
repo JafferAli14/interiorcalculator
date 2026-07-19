@@ -666,36 +666,44 @@ async function generateEstimate(values: {
   }
 
   .progress-tracker {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.45rem;
     padding-top: 0.5rem;
   }
 
   .tracker-line-bg {
-    top: 11px;
+    top: 7px;
   }
 
   .tracker-node {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
+    border-width: 2px;
   }
 
   .tracker-step.active .tracker-node {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     border-width: 3px;
+    box-shadow: 0 0 0 2px rgba(79, 39, 116, 0.1);
   }
 
   .tracker-label {
-    display: none;
+    display: block;
+    margin-top: 0.45rem;
+    font-size: 0.58rem;
+    line-height: 1.15;
+    letter-spacing: 0;
   }
 
   .tracker-counter {
-    min-width: auto;
-    text-align: center;
+    min-width: 2.25rem;
+    text-align: right;
     margin-top: 0;
-    font-size: 0.9rem;
+    font-size: 0.78rem;
+    line-height: 1;
+    padding-top: 0.18rem;
   }
 
   .logout-btn {
