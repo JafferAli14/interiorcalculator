@@ -29,7 +29,26 @@
           </div>
         </div>
 
-        <div class="report-actions">
+        <div class="report-actions no-print">
+          <button
+            v-if="store.preview.data"
+            type="button"
+            class="btn btn-report-tool"
+            @click="showCalculation = !showCalculation"
+          >
+            {{ showCalculation ? 'Hide Calculations' : 'Show Calculations' }}
+          </button>
+
+          <button
+            v-if="store.preview.data"
+            type="button"
+            class="btn btn-report-tool"
+            @click="printReport"
+          >
+            <i class="bi bi-printer me-2"></i>
+            Print PDF
+          </button>
+
           <button
             type="button"
             class="btn btn-save"
@@ -62,7 +81,11 @@
         {{ store.save.error }}
       </div>
 
-      <EstimatePreview v-if="store.preview.data" :preview="store.preview.data" />
+      <EstimatePreview
+        v-if="store.preview.data"
+        :preview="store.preview.data"
+        :show-calculation="showCalculation"
+      />
 
       <section v-else class="empty-report">
         <h2 class="h4 fw-bold mb-2">No estimate preview available</h2>
@@ -76,13 +99,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EstimatePreview from '@/components/EstimatePreview.vue'
 import { usePlannerStore } from '@/stores/Planner'
 
 const router = useRouter()
 const store = usePlannerStore()
+const showCalculation = ref(true)
 
 const saveIsDisabled = computed(
   () =>
@@ -97,6 +121,9 @@ const saveButtonLabel = computed(() => {
   if (store.save.completed) return 'Saved ✓'
   return 'Save Project'
 })
+function printReport() {
+  window.print()
+}
 </script>
 
 <style scoped>
@@ -177,8 +204,23 @@ const saveButtonLabel = computed(() => {
 
 .report-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
+}
+
+.btn-report-tool {
+  background: white;
+  color: #2c2c2c;
+  border: 1px solid rgba(20, 20, 20, 0.14);
+  border-radius: 14px;
+  padding: 0.8rem 1.25rem;
+  font-weight: 700;
+}
+
+.btn-report-tool:hover {
+  background: #f8f5ef;
+  color: #2c2c2c;
 }
 
 .btn-save {
@@ -231,6 +273,27 @@ const saveButtonLabel = computed(() => {
 
   .report-project-name {
     font-size: 2.35rem;
+  }
+}
+
+@media print {
+  .report-wrapper {
+    background: white;
+  }
+
+  .report-inner {
+    max-width: none;
+    padding: 0 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .report-header,
+  .empty-report {
+    border-color: #dddddd;
+    box-shadow: none;
   }
 }
 </style>

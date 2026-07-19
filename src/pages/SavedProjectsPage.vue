@@ -28,12 +28,12 @@
         <button type="button" class="btn btn-outline-danger" @click="fetchProjects">Retry</button>
       </section>
 
-      <section v-else-if="projects.length === 0" class="state-card text-center">
+      <section v-if="!loading && !error && projects.length === 0" class="state-card text-center">
         <h2 class="h5 fw-bold mb-2">No saved projects yet.</h2>
         <p class="text-muted mb-0">Saved bedroom estimates will appear here.</p>
       </section>
 
-      <section v-else class="projects-grid">
+      <section v-if="!loading && !error && projects.length > 0" class="projects-grid">
         <article v-for="project in projects" :key="project.id" class="project-card">
           <div class="project-card-main">
             <div>
@@ -79,7 +79,6 @@
             >
               View Report
             </button>
-            <button type="button" class="btn btn-outline-secondary" disabled>Duplicate</button>
           </div>
         </article>
       </section>

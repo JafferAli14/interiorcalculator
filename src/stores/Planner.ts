@@ -17,6 +17,7 @@ import type {
   QuantityItem,
   ReportCategory,
   BedroomPlannerRequest,
+  SavedBedroomProjectDetailResponse,
   SavedBedroomProjectResponse,
 } from '@/types/bedroomPlanner'
 
@@ -102,12 +103,20 @@ const DESIGN_CODES: Record<string, string> = {
   Classic: 'DESIGN_CLASSIC',
 }
 
+const DESIGN_STYLES_BY_CODE = Object.fromEntries(
+  Object.entries(DESIGN_CODES).map(([style, code]) => [code, style]),
+) as Record<string, string>
+
 const LIGHT_CODES: Record<Exclude<LightingType, ''>, string> = {
   Track: 'LIGHT_TRACK',
   Spot: 'LIGHT_SPOT',
   Hidden: 'LIGHT_HIDDEN',
   Strip: 'LIGHT_STRIP',
 }
+
+const LIGHT_TYPES_BY_CODE = Object.fromEntries(
+  Object.entries(LIGHT_CODES).map(([type, code]) => [code, type]),
+) as Record<string, Exclude<LightingType, ''>>
 
 export function resolveTilePriceItemCode(
   material: string | null | undefined,
@@ -282,6 +291,71 @@ function cleanAdditionalRequirement(item: AdditionalRequirementDraft): Additiona
     description: cleanString(item.description),
     customPrice: positiveOrNull(item.customPrice),
   }
+}
+
+function cloneFixedItem(item: FixedItem): FixedItem {
+  return {
+    enabled: item.enabled,
+    priceItemCode: item.priceItemCode,
+  }
+}
+
+function cloneQuantityItem(item: QuantityItem): QuantityItem {
+  return {
+    ...cloneFixedItem(item),
+    quantity: item.quantity,
+  }
+}
+
+function cloneLengthItem(item: LengthItem): LengthItem {
+  return {
+    ...cloneFixedItem(item),
+    length: item.length,
+  }
+}
+
+function cloneAreaItem(item: AreaItem): AreaItem {
+  return {
+    ...cloneFixedItem(item),
+    area: item.area,
+  }
+}
+
+function cloneCustomFixedItem(item: CustomFixedItem): CustomFixedItem {
+  return {
+    ...cloneFixedItem(item),
+    pricingMode: item.pricingMode,
+    customPrice: item.customPrice,
+  }
+}
+
+function cloneCustomQuantityItem(item: CustomQuantityItem): CustomQuantityItem {
+  return {
+    ...cloneQuantityItem(item),
+    pricingMode: item.pricingMode,
+    customPrice: item.customPrice,
+  }
+}
+
+function cloneCustomAreaItem(item: CustomAreaItem): CustomAreaItem {
+  return {
+    ...cloneAreaItem(item),
+    pricingMode: item.pricingMode,
+    customPrice: item.customPrice,
+  }
+}
+
+function tileDetailsFromCode(code: string | null): { material: FloorMaterial; tileSize: TileSize } {
+  const match = code?.match(/^FLOOR_(PORCELAIN|MARBLE|GRANITE)_(60|120)$/)
+  if (!match) return { material: '', tileSize: '' }
+
+  const materialCode = match[1]
+  const sizeCode = match[2]
+  if (!materialCode || !sizeCode) return { material: '', tileSize: '' }
+
+  const material = `${materialCode[0]}${materialCode.slice(1).toLowerCase()}` as FloorMaterial
+  const tileSize = sizeCode === '60' ? '60x60' : '120x120'
+  return { material, tileSize }
 }
 
 function createInitialState() {
@@ -738,6 +812,230 @@ export const usePlannerStore = defineStore('planner', {
       } finally {
         this.save.loading = false
       }
+    },
+
+    loadDuplicateProject(savedProject: SavedBedroomProjectDetailResponse) {
+      const request = savedProject.plannerRequest
+      if (!request) {
+        throw new Error('This saved project does not include a planner snapshot to duplicate.')
+      }
+
+      const nextState = createInitialState()
+      const projectName = savedProject.projectName.trim() || request.projectName.trim() || 'Bedroom Planner Estimate'
+      const tileDetails = tileDetailsFromCode(request.flooring.tiles.priceItemCode)
+      const material = (request.flooring.tiles.material as FloorMaterial | null) || tileDetails.material
+      const tileSize = (request.flooring.tiles.tileSize as TileSize | null) || tileDetails.tileSize
+      const firstLight = request.ceiling.ceilingLights.find((light) => light.enabled)
+
+      nextState.currentStep = 1
+      nextState.schemaVersion = request.schemaVersion
+      nextState.currency = request.currency
+      nextState.projectName = `${projectName} Copy`
+      nextState.clientName = savedProject.customerName.trim() || request.clientName
+      nextState.clientMobile = savedProject.customerPhone ?? request.clientMobile ?? ''
+      nextState.clientEmail = savedProject.customerEmail ?? ''
+      nextState.clientAddress = savedProject.customerAddress ?? ''
+
+      nextState.measurements = {
+        roomLength: request.measurements.roomLength,
+        roomWidth: request.measurements.roomWidth,
+        ceilingArea: request.measurements.ceilingArea,
+        wallArea: request.measurements.wallArea,
+        flooringArea: request.measurements.flooringArea,
+      }
+      nextState.dimensions.length = request.measurements.roomLength ?? 0
+      nextState.dimensions.width = request.measurements.roomWidth ?? 0
+
+      nextState.design.priceItemCode = request.design.priceItemCode
+      nextState.design.style = request.design.priceItemCode
+        ? DESIGN_STYLES_BY_CODE[request.design.priceItemCode] ?? ''
+        : ''
+
+      nextState.ceiling.gypsumCeiling = cloneFixedItem(request.ceiling.gypsumCeiling)
+      nextState.ceiling.cornish = cloneLengthItem(request.ceiling.cornish)
+      nextState.ceiling.ceilingLights = request.ceiling.ceilingLights.map((light) => ({
+        enabled: light.enabled,
+        priceItemCode: light.priceItemCode,
+        quantity: light.quantity,
+      }))
+      nextState.ceiling.chandelier = cloneCustomQuantityItem(request.ceiling.chandelier)
+      nextState.ceiling.curtainBox = cloneLengthItem(request.ceiling.curtainBox)
+      nextState.ceiling.ceilingPainting = {
+        enabled: request.ceiling.ceilingPainting.enabled,
+        priceItemCode: request.ceiling.ceilingPainting.priceItemCode,
+        paintColour: request.ceiling.ceilingPainting.paintColour,
+      }
+      nextState.ceiling.chandelierAnswered = true
+      nextState.ceiling.curtainBoxAnswered = true
+      nextState.ceiling.ceilingPaintingAnswered = true
+      nextState.ceiling.level =
+        request.ceiling.gypsumCeiling.priceItemCode === 'CEILING_LEVEL_1'
+          ? 1
+          : request.ceiling.gypsumCeiling.priceItemCode === 'CEILING_LEVEL_2'
+            ? 2
+            : null
+      nextState.ceiling.manualArea = request.measurements.ceilingArea
+      nextState.ceiling.cornishSize =
+        request.ceiling.cornish.priceItemCode === 'CORNISH_5CM'
+          ? 5
+          : request.ceiling.cornish.priceItemCode === 'CORNISH_10CM'
+            ? 10
+            : null
+      nextState.ceiling.cornishLength = request.ceiling.cornish.length
+      nextState.ceiling.lightingType = firstLight?.priceItemCode
+        ? LIGHT_TYPES_BY_CODE[firstLight.priceItemCode] ?? ''
+        : ''
+      nextState.ceiling.lightsCount = firstLight?.quantity ?? null
+      nextState.ceiling.hasChandelier = request.ceiling.chandelier.enabled
+      nextState.ceiling.chandelierQuantity = request.ceiling.chandelier.quantity
+      nextState.ceiling.hasCurtainBox = request.ceiling.curtainBox.enabled
+      nextState.ceiling.curtainBoxLength = request.ceiling.curtainBox.length
+
+      nextState.walls.curtain = cloneLengthItem(request.walls.curtain)
+      nextState.walls.moulding = cloneLengthItem(request.walls.moulding)
+      nextState.walls.wallPainting = {
+        ...cloneCustomFixedItem(request.walls.wallPainting),
+        paintColour: request.walls.wallPainting.paintColour,
+      }
+      nextState.walls.wallpaper = cloneFixedItem(request.walls.wallpaper)
+      nextState.walls.doors = cloneQuantityItem(request.walls.doors)
+      nextState.walls.windows = cloneQuantityItem(request.walls.windows)
+      nextState.walls.cladding = cloneAreaItem(request.walls.cladding)
+      nextState.walls.doorsAnswered = true
+      nextState.walls.windowsAnswered = true
+      nextState.walls.claddingAnswered = true
+      nextState.walls.curtainChoice =
+        request.walls.curtain.priceItemCode === 'CURTAIN_CHOICE_1'
+          ? 'Choice 1'
+          : request.walls.curtain.priceItemCode === 'CURTAIN_CHOICE_2'
+            ? 'Choice 2'
+            : ''
+      nextState.walls.curtainLength = request.walls.curtain.length
+      nextState.walls.manualArea = request.measurements.wallArea
+      nextState.walls.mouldingLength = request.walls.moulding.length
+      nextState.walls.ceilingPainting = request.ceiling.ceilingPainting.paintColour ?? 'White'
+      nextState.walls.wallPaintingChoice =
+        request.walls.wallPainting.priceItemCode === 'WALL_PAINT_CHOICE_1'
+          ? 'Choice 1'
+          : request.walls.wallPainting.priceItemCode === 'WALL_PAINT_CHOICE_2'
+            ? 'Choice 2'
+            : ''
+      nextState.walls.wallpaperChoice =
+        request.walls.wallpaper.priceItemCode === 'WALLPAPER_CHOICE_1'
+          ? 'Choice 1'
+          : request.walls.wallpaper.priceItemCode === 'WALLPAPER_CHOICE_2'
+            ? 'Choice 2'
+            : ''
+      nextState.walls.doorsChoice = request.walls.doors.enabled ? 'Changed' : 'Retained'
+      nextState.walls.doorQuantity = request.walls.doors.quantity
+      nextState.walls.windowsChoice = request.walls.windows.enabled ? 'Changed' : 'Retained'
+      nextState.walls.windowQuantity = request.walls.windows.quantity
+      nextState.walls.hasCladding = request.walls.cladding.enabled
+      nextState.walls.claddingArea = request.walls.cladding.area
+
+      nextState.flooring.tiles = {
+        enabled: request.flooring.tiles.enabled,
+        priceItemCode: request.flooring.tiles.priceItemCode,
+        material: material || null,
+        tileSize: tileSize || null,
+      }
+      nextState.flooring.skirting = cloneLengthItem(request.flooring.skirting)
+      nextState.flooring.parquet = cloneAreaItem(request.flooring.parquet)
+      nextState.flooring.glasswork = cloneAreaItem(request.flooring.glasswork)
+      nextState.flooring.parquetAnswered = true
+      nextState.flooring.glassworkAnswered = true
+      nextState.flooring.material = material
+      nextState.flooring.manualArea = request.measurements.flooringArea
+      nextState.flooring.tileSize = tileSize
+      nextState.flooring.skirtingSize =
+        request.flooring.skirting.priceItemCode === 'SKIRTING_10'
+          ? 10
+          : request.flooring.skirting.priceItemCode === 'SKIRTING_15'
+            ? 15
+            : null
+      nextState.flooring.skirtingLength = request.flooring.skirting.length
+      nextState.flooring.hasParquet = request.flooring.parquet.enabled
+      nextState.flooring.parquetArea = request.flooring.parquet.area
+      nextState.flooring.hasGlassWork = request.flooring.glasswork.enabled
+      nextState.flooring.glassWorkArea = request.flooring.glasswork.area
+
+      nextState.furnishing.bed = cloneFixedItem(request.furnishing.bed)
+      nextState.furnishing.headboardCladding = cloneCustomAreaItem(request.furnishing.headboardCladding)
+      nextState.furnishing.sideTable = cloneQuantityItem(request.furnishing.sideTable)
+      nextState.furnishing.sideLamps = cloneQuantityItem(request.furnishing.sideLamps)
+      nextState.furnishing.tvUnit = cloneCustomFixedItem(request.furnishing.tvUnit)
+      nextState.furnishing.chairs = cloneQuantityItem(request.furnishing.chairs)
+      nextState.furnishing.stools = cloneQuantityItem(request.furnishing.stools)
+      nextState.furnishing.dressingTable = cloneFixedItem(request.furnishing.dressingTable)
+      nextState.furnishing.carpet = cloneAreaItem(request.furnishing.carpet)
+      nextState.furnishing.bench = cloneFixedItem(request.furnishing.bench)
+      nextState.furnishing.ac = cloneCustomQuantityItem(request.furnishing.ac)
+      nextState.furnishing.headboardCladdingAnswered = true
+      nextState.furnishing.sideTableAnswered = true
+      nextState.furnishing.sideLampsAnswered = true
+      nextState.furnishing.tvUnitAnswered = true
+      nextState.furnishing.chairsAnswered = true
+      nextState.furnishing.stoolsAnswered = true
+      nextState.furnishing.dressingTableAnswered = true
+      nextState.furnishing.carpetAnswered = true
+      nextState.furnishing.benchAnswered = true
+      nextState.furnishing.acAnswered = true
+      nextState.furnishing.bedSize =
+        request.furnishing.bed.priceItemCode === 'BED_KING'
+          ? 'King'
+          : request.furnishing.bed.priceItemCode === 'BED_QUEEN'
+            ? 'Queen'
+            : ''
+      nextState.furnishing.hasHeadboard = request.furnishing.headboardCladding.enabled
+      nextState.furnishing.hasBedsideCladding = request.furnishing.headboardCladding.enabled
+      nextState.furnishing.bedsideCladdingArea = request.furnishing.headboardCladding.area
+      nextState.furnishing.sideTableChoice = request.furnishing.sideTable.enabled ? 'Choice 1' : ''
+      nextState.furnishing.sideTableQuantity = request.furnishing.sideTable.quantity
+      nextState.furnishing.hasSideLamps = request.furnishing.sideLamps.enabled
+      nextState.furnishing.sideLampQuantity = request.furnishing.sideLamps.quantity
+      nextState.furnishing.tvUnitChoice = request.furnishing.tvUnit.enabled ? 'Choice 1' : ''
+      nextState.furnishing.chairsLegacy = {
+        exists: request.furnishing.chairs.enabled,
+        count: request.furnishing.chairs.quantity ?? 0,
+      }
+      nextState.furnishing.stoolsLegacy = {
+        exists: request.furnishing.stools.enabled,
+        count: request.furnishing.stools.quantity ?? 0,
+      }
+      nextState.furnishing.hasDressingTable = request.furnishing.dressingTable.enabled
+      nextState.furnishing.hasCarpet = request.furnishing.carpet.enabled
+      nextState.furnishing.carpetArea = request.furnishing.carpet.area
+      nextState.furnishing.hasBench = request.furnishing.bench.enabled
+      nextState.furnishing.acType =
+        request.furnishing.ac.priceItemCode === 'AC_SPLIT'
+          ? 'Split'
+          : request.furnishing.ac.priceItemCode === 'AC_CASSETTE'
+            ? 'Cassette'
+            : ''
+      nextState.furnishing.acQuantity = request.furnishing.ac.quantity
+
+      nextState.additionalRequirements = request.additionalRequirements.map((item) => ({
+        id: crypto.randomUUID(),
+        category: item.category,
+        itemName: item.itemName,
+        description: item.description,
+        customPrice: item.customPrice,
+      }))
+
+      nextState.preview = {
+        data: null,
+        loading: false,
+        error: null,
+        isStale: false,
+      }
+      nextState.save = {
+        data: null,
+        loading: false,
+        error: null,
+        completed: false,
+      }
+
+      this.$patch(nextState)
     },
 
     clearPreview() {

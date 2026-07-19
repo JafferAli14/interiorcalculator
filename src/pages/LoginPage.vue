@@ -4,7 +4,7 @@
 
     <form class="login-card" @submit.prevent="handleLogin">
       <h1>Welcome!</h1>
-      <p>Interior Calculator Admin</p>
+      <p>Maskan Fast-Track Admin</p>
 
       <input v-model="username" type="text" placeholder="Username" />
 

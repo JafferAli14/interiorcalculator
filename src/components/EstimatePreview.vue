@@ -21,14 +21,19 @@
         </div>
 
         <div class="price-table">
-          <div class="price-row price-row-head">
+          <div class="price-row price-row-head" :class="{ 'without-calculation': !showCalculation }">
             <span>Item</span>
             <span>Details</span>
-            <span>Calculation</span>
+            <span v-if="showCalculation">Calculation</span>
             <span class="amount-cell">Amount</span>
           </div>
 
-          <div v-for="line in group.lines" :key="lineKey(line)" class="price-row">
+          <div
+            v-for="line in group.lines"
+            :key="lineKey(line)"
+            class="price-row"
+            :class="{ 'without-calculation': !showCalculation }"
+          >
             <div>
               <strong>{{ line.itemName }}</strong>
             </div>
@@ -43,7 +48,7 @@
               <span v-if="line.selection" class="selection-text">{{ line.selection }}</span>
             </div>
 
-            <div class="calculation-cell">
+            <div v-if="showCalculation" class="calculation-cell">
               {{ line.calculationText }}
             </div>
 
@@ -67,9 +72,12 @@ import type {
   ProjectPriceLine,
 } from '@/types/bedroomPlanner'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   preview: BedroomPreviewResponse
-}>()
+  showCalculation?: boolean
+}>(), {
+  showCalculation: true,
+})
 
 const fixedCategoryOrder = ['Design', 'Ceiling', 'Walls', 'Flooring', 'Furnishing', 'Other']
 
@@ -184,6 +192,10 @@ function lineKey(line: ProjectPriceLine): string {
   align-items: start;
   padding: 0.95rem 1.25rem;
   border-bottom: 1px solid rgba(20, 20, 20, 0.06);
+}
+
+.price-row.without-calculation {
+  grid-template-columns: minmax(180px, 1.2fr) minmax(150px, 1fr) minmax(110px, 0.7fr);
 }
 
 .price-row:last-child {

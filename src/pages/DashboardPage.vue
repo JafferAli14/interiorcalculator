@@ -2,7 +2,7 @@
   <div class="dashboard-page">
     <div class="dashboard-header">
       <div>
-        <h1>Interior Calculator</h1>
+        <h1>Maskan Fast-Track</h1>
         <p>Admin Dashboard</p>
       </div>
 

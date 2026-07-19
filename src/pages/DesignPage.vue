@@ -4,7 +4,7 @@
       <header class="text-center" :class="store.currentStep > 1 ? 'mb-5' : 'mb-4'">
         <button class="logout-btn" @click="logout">Logout</button>
 
-        <h1 class="display-5 fw-bold mb-3">Bedroom Planner</h1>
+        <h1 class="display-5 fw-bold mb-3">Maskan Fast-Track Solutions</h1>
 
         <div class="progress-container mx-auto" style="max-width: 760px">
           <div class="progress-tracker">
